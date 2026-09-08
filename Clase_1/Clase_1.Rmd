@@ -1,0 +1,2165 @@
+---
+title: "Introducción a Python y Google Colab"
+subtitle: "<br/> Fundamentos para analítica financiera"
+author: "Orlando Joaqui-Barandica"
+institute: "Universidad del Valle"
+date: "Sesión 1"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: 
+      - default
+      - rladies
+      - rladies-fonts
+      - fonts_mtheme.css
+      - sidney.css
+    seal: false  
+    nature: 
+      ratio: 16:9
+      beforeInit: "macros.js"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+
+---
+
+```{r setup, include = FALSE}
+library(knitr)
+library(tidyverse)
+
+knitr::opts_chunk$set(echo = TRUE,
+                      dpi = 300,
+                      warning = FALSE,
+                      message = FALSE,
+                      error = FALSE)
+
+options(htmltools.dir.version = FALSE)
+
+xaringanExtra::use_share_again()
+
+
+xaringanExtra::use_clipboard()
+
+xaringanExtra::use_xaringan_extra("tile_view")
+```
+
+class: inverse, left, bottom
+background-image: url("img/fondo.jpg")
+background-size: cover
+
+
+<style>
+.remark-slide-content {
+  font-size: 25px;
+}
+.remark-slide-content h1 {
+  color: #1F3D59;
+  font-weight: 700;
+}
+
+
+
+
+.remark-slide-content h2, .remark-slide-content h3 {
+  color: #BB7E17;
+}
+.orange {
+  color: #BB7E17;
+  font-weight: 700;
+}
+.blue {
+  color: #1F3D59;
+  font-weight: 700;
+}
+.gray {
+  color: #5f6b73;
+}
+.small {
+  font-size: 18px;
+}
+.medium {
+  font-size: 22px;
+}
+.big {
+  font-size: 36px;
+}
+.huge {
+  font-size: 52px;
+}
+.pull-left-55 {
+  float: left;
+  width: 55%;
+}
+.pull-right-40 {
+  float: right;
+  width: 40%;
+}
+.callout {
+  background: #eef3f6;
+  border-left: 8px solid #BB7E17;
+  padding: 16px 22px;
+  margin-top: 18px;
+  border-radius: 10px;
+}
+.note-box {
+  background: #F7F7F7;
+  border: 1px solid #D9DEE2;
+  padding: 14px 20px;
+  border-radius: 10px;
+}
+.mock-browser {
+  border: 2px solid #D5DADD;
+  border-radius: 14px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.09);
+  font-size: 18px;
+}
+.mock-topbar {
+  background: #eef3f6;
+  padding: 10px 14px;
+  color: #46545c;
+  border-bottom: 1px solid #D5DADD;
+}
+.dot { display:inline-block; width:11px; height:11px; border-radius:50%; background:#C9CED3; margin-right:5px; }
+.mock-url {
+  display:inline-block;
+  margin-left:12px;
+  padding: 4px 12px;
+  background:white;
+  border-radius: 14px;
+  color:#6A737B;
+  width: 70%;
+}
+.mock-menu {
+  background: #fff;
+  padding: 10px 14px;
+  border-bottom: 1px solid #E4E7EA;
+  color:#1F3D59;
+}
+.mock-body {
+  padding: 16px;
+}
+.cell-text {
+  border: 1px solid #D9DEE2;
+  background: #FAFAFA;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+}
+.cell-code {
+  border: 1px solid #D9DEE2;
+  background: #16232E;
+  color: #F2F5F7;
+  padding: 12px;
+  border-radius: 10px;
+  font-family: Consolas, Monaco, monospace;
+  margin-bottom: 12px;
+}
+.tag {
+  display: inline-block;
+  background: #1F3D59;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.timeline {
+  border-left: 5px solid #1F3D59;
+  margin-left: 20px;
+  padding-left: 22px;
+}
+.timeline p {
+  margin: 10px 0;
+}
+.footnote {
+  font-size: 14px;
+  color: #6A737B;
+  position: absolute;
+  bottom: 18px;
+  left: 55px;
+  right: 55px;
+}
+.code-small pre {
+  font-size: 17px !important;
+}
+
+
+
+/* Títulos blancos cuando el slide tiene fondo oscuro */
+.inverse h1 {
+  color: #FFFFFF !important;
+}
+
+/* Título principal de la portada */
+.title-slide h1 {
+  color: #FFFFFF !important;
+}
+
+
+
+/* Título principal de la portada */
+.portada h1 {
+  color: #FFFFFF !important;
+}
+
+/* Títulos principales en diapositivas inverse */
+.inverse h1 {
+  color: #FFFFFF !important;
+}
+
+</style>
+
+
+
+
+# **`r rmarkdown::metadata$title`**
+----
+
+## **`r rmarkdown::metadata$subtitle`**
+
+### `r rmarkdown::metadata$author`
+### `r rmarkdown::metadata$date`
+
+---
+
+
+class: center, middle, inverse
+
+# Ruta de la sesión de hoy
+
+## Historia → actualidad → Python vs R → ecosistema → Colab paso a paso → primer script financiero → actividad
+
+<br>
+
+.orange[La meta de hoy no es dominar Python. La meta es entender el mapa y ejecutar con seguridad.]
+
+???
+**DOCENTE:** Esta clase puede ser muy conversada. No arranques con código. Primero baja ansiedad: “Antes de escribir Python, vamos a entender qué estamos abriendo, dónde corre y por qué esto sirve en finanzas”.
+
+---
+
+# ¿Qué curso estamos empezando?
+
+La asignatura introduce los fundamentos de la programación aplicada al contexto financiero, usando Python para organizar, transformar y presentar información.
+
+--
+
+### En palabras simples
+
+Vamos a aprender a convertir procedimientos financieros en instrucciones que una computadora pueda repetir.
+
+--
+
+### Resultado de esta sesión
+
+Una primera **calculadora financiera** con variables, tipos de datos, operaciones, `print()` e `input()`.
+
+???
+**DOCENTE:** Conecta con el microcurrículo. No prometas que serán programadores expertos. La promesa real es autonomía para trabajar cálculos y datos financieros reproducibles.
+
+---
+
+# ¿Por qué empezar tan despacio?
+
+Muchos cursos de programación fallan porque asumen que todos saben qué significan palabras como:
+
+- notebook,
+- entorno,
+- intérprete,
+- kernel,
+- librería,
+- instalación,
+- runtime,
+- archivo `.ipynb`.
+
+--
+
+.callout[
+Hoy vamos a aclarar el mapa antes de escribir demasiado código.
+]
+
+???
+**DOCENTE:** Puedes decir: “Si uno no entiende dónde está parado, cada error se siente como algo misterioso. Esta primera clase es para quitarle misterio al entorno”.
+
+---
+
+
+# Objetivos de aprendizaje de hoy
+
+Al finalizar la sesión, el estudiante debe poder:
+
+1. explicar qué es programar en un problema financiero;
+2. reconocer qué es Python y dónde se ejecuta;
+3. distinguir notebook, Jupyter, Colab, Anaconda y VS Code;
+4. crear y ejecutar un cuaderno en Google Colab;
+5. escribir variables y reconocer tipos básicos;
+6. calcular interés simple, compuesto y valor presente.
+
+???
+**DOCENTE:** No metas pandas ni condicionales. Si preguntan por modelos, APIs o bases de datos, di que eso viene en sesiones posteriores.
+
+---
+
+class: center, middle, inverse
+
+# Parte 1
+## ¿Qué es programar?
+
+---
+
+# Programar no es escribir símbolos raros
+
+Programar es dar instrucciones ordenadas a una computadora para que realice una tarea.
+
+--
+
+### La idea clave
+
+La computadora no interpreta intención.
+
+La computadora ejecuta exactamente lo que escribimos, en el orden en que lo escribimos.
+
+--
+
+.callout[
+En programación, una instrucción ambigua no es “medio clara”. Es una fuente de error.
+]
+
+???
+**DOCENTE:** Ejemplo verbal: “Si yo digo calcule la tasa, el computador no sabe cuál tasa: efectiva anual, mensual, nominal, vencida, anticipada, etc.”
+
+---
+
+# Un algoritmo antes del código
+
+Un algoritmo es una secuencia ordenada de pasos para resolver un problema.
+
+--
+
+### Ejemplo financiero
+
+Queremos calcular el valor futuro de una inversión.
+
+1. Guardar el capital inicial.
+2. Guardar la tasa de interés.
+3. Guardar el número de periodos.
+4. Aplicar la fórmula.
+5. Mostrar el resultado.
+6. Interpretar si conviene o no.
+
+--
+
+.orange[El código viene después. Primero está la lógica.]
+
+???
+**DOCENTE:** Esta diapositiva te permite decir que programar no reemplaza el criterio financiero. Python calcula; el analista decide si el cálculo tiene sentido.
+
+---
+
+# Programar para un analista financiero
+
+En finanzas, programar sirve para:
+
+- repetir cálculos sin copiarlos a mano;
+- documentar exactamente qué se hizo;
+- reducir errores de arrastre en hojas de cálculo;
+- trabajar con datos que cambian cada día o cada mes;
+- conectar fuentes externas;
+- construir reportes reproducibles.
+
+--
+
+.callout[
+Programar no es hacer una cuenta. Es dejar escrita una lógica para volver a usarla.
+]
+
+???
+**DOCENTE:** Conecta con un ejemplo real: actualizar una tabla de cuotas o tasas todos los meses. En Excel funciona, pero se vuelve frágil si el proceso se repite mucho.
+
+---
+
+# Vocabulario mínimo para no perdernos
+
+| Término | Qué significa |
+|---|---|
+| Código fuente | Texto con instrucciones escritas por una persona |
+| Lenguaje | Idioma formal para darle instrucciones al computador |
+| Intérprete | Programa que lee y ejecuta el código |
+| Sintaxis | Reglas de escritura del lenguaje |
+| Variable | Nombre que apunta a un valor guardado |
+| Función | Bloque de código reutilizable |
+| Librería | Código ya escrito por otros |
+| Bug | Error en el código |
+
+???
+**DOCENTE:** No hay que memorizar. Esta tabla es solo para que el vocabulario deje de sonar extraño.
+
+---
+
+# Código, intérprete y resultado
+
+<div class="mock-browser">
+  <div class="mock-topbar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="mock-url">mi_notebook.ipynb</span></div>
+  <div class="mock-body">
+    <div class="cell-code">capital = 1000000<br>tasa = 0.10<br>capital * (1 + tasa)</div>
+    <div class="cell-text"><b>Intérprete de Python:</b> lee línea por línea, guarda valores y devuelve un resultado.</div>
+    <div class="cell-text"><b>Resultado:</b> 1100000.0</div>
+  </div>
+</div>
+
+<br>
+
+.small[Representación didáctica. No es una captura oficial de Colab.]
+
+???
+**DOCENTE:** Este dibujo no intenta copiar Colab. Sirve para explicar el flujo: escribo código, Python lo interpreta, aparece un resultado.
+
+---
+
+# La máquina no sabe de finanzas
+
+Python puede calcular:
+
+```python
+1000000 * (1 + 0.10)
+```
+
+--
+
+Pero Python no sabe si:
+
+- la tasa está en años o meses;
+- el plazo está en la misma unidad;
+- la tasa es efectiva o nominal;
+- el resultado tiene sentido económico.
+
+--
+
+.orange[El criterio financiero sigue siendo humano.]
+
+???
+**DOCENTE:** Este mensaje es importante. No vendas Python como magia. Véndelo como herramienta de cálculo reproducible.
+
+---
+
+class: center, middle, inverse
+
+# Parte 2
+## Python: historia, actualidad y por qué importa
+
+---
+
+# Python: historia breve
+
+<div class="timeline">
+<p><span class="blue">1989:</span> Guido van Rossum empieza a desarrollar Python, en Países Bajos.</p>
+<p><span class="blue">1991:</span> se publica la primera versión pública.</p>
+<p><span class="blue">2000:</span> Python 2 consolida muchas bases del lenguaje.</p>
+<p><span class="blue">2008:</span> aparece Python 3, la rama moderna que usamos hoy.</p>
+<p><span class="blue">2010s–2020s:</span> Python se vuelve central en ciencia de datos, automatización, IA y educación.</p>
+</div>
+
+.footnote[Fuente sugerida: Python Software Foundation / documentación histórica del lenguaje.]
+
+???
+**DOCENTE:** Puedes decir que Python no nació como “lenguaje financiero”. Su fuerza fue ser general, legible y extensible.
+
+---
+
+# ¿Por qué se llama Python?
+
+Python no se llama así por la serpiente.
+
+--
+
+El nombre viene de **Monty Python's Flying Circus**, un programa británico de comedia del que Guido van Rossum era fan.
+
+--
+
+### ¿Por qué esto importa?
+
+Porque Python conserva una cultura de lenguaje:
+
+- pragmático,
+- legible,
+- con comunidad,
+- menos solemne que otros lenguajes.
+
+???
+**DOCENTE:** Este dato ayuda a bajar el tono técnico y a conectar con los estudiantes. No es esencial, pero humaniza la historia.
+
+---
+
+# ¿Qué tipo de lenguaje es Python?
+
+| Característica | Traducción |
+|---|---|
+| Alto nivel | Se parece más al lenguaje humano que al lenguaje de máquina |
+| Interpretado | Se ejecuta línea por línea |
+| Propósito general | Sirve para muchas tareas distintas |
+| Tipado dinámico | No declaramos el tipo antes; Python lo infiere |
+| Open source | Se puede usar libremente y tiene comunidad abierta |
+
+--
+
+.callout[
+La ventaja para principiantes: se puede hacer algo útil con pocas líneas.
+]
+
+???
+**DOCENTE:** Alto nivel no significa “avanzado”. Significa que está lejos del detalle interno de la máquina.
+
+---
+
+# Python en la actualidad
+
+Python se volvió muy visible por tres mundos que crecieron al mismo tiempo:
+
+--
+
+### 1. Datos
+`pandas`, `numpy`, `matplotlib`, `scikit-learn`
+
+### 2. Automatización
+Archivos, reportes, correos, APIs, tareas repetitivas
+
+### 3. Inteligencia artificial
+Machine learning, modelos generativos, procesamiento de texto e imágenes
+
+--
+
+.orange[No todo Python es IA. Pero mucha IA moderna usa Python como herramienta de trabajo.]
+
+???
+**DOCENTE:** Evita prometer que van a hacer IA en la clase 1. Solo ubica por qué Python está tan presente en el mercado.
+
+---
+
+# Una señal de popularidad
+
+```{r tiobe_bar, fig.width=8.6, fig.height=4.1, eval=TRUE, echo=FALSE}
+tiobe_2026 <- tibble::tribble(
+  ~lenguaje, ~porcentaje,
+  "Python", 17.76,
+  "C", 10.28,
+  "C++", 8.67,
+  "Java", 7.54,
+  "C#", 4.22,
+  "JavaScript", 2.76,
+  "Visual Basic", 2.55,
+  "SQL", 2.16,
+  "R", 1.69,
+  "Rust", 1.34
+) %>% mutate(lenguaje = forcats::fct_reorder(lenguaje, porcentaje))
+
+ggplot(tiobe_2026, aes(x = lenguaje, y = porcentaje)) +
+  geom_col(fill = "#1F3D59") +
+  coord_flip() +
+  labs(x = NULL, y = "Popularidad (%)", title = "Ranking TIOBE — septiembre de 2026") +
+  theme_minimal(base_size = 16) +
+  theme(plot.title = element_text(color = "#1F3D59", face = "bold"))
+```
+
+.footnote[Fuente: TIOBE Programming Community Index, septiembre de 2026.]
+
+???
+**DOCENTE:** No conviertas esto en una clase de ranking. Di: “Los rankings no miden calidad absoluta, pero sí muestran visibilidad y comunidad”.
+
+---
+
+# ¿Qué significa ese ranking?
+
+Un ranking de lenguajes no dice cuál lenguaje es “mejor”.
+
+--
+
+Mide señales como búsquedas, uso reportado, comunidad o actividad pública, según la metodología de cada fuente.
+
+--
+
+### Lectura útil para nosotros
+
+Python aparece arriba porque muchas personas lo usan para:
+
+- datos,
+- automatización,
+- educación,
+- machine learning,
+- desarrollo de software.
+
+--
+
+
+
+???
+**DOCENTE:** Si alguien pregunta si R está muerto: no. R está vivo y fuerte en estadística. El punto es que Python tiene mucho alcance transversal.
+
+
+
+---
+
+
+
+# ¿Qué significa ese ranking?
+
+Un ranking de lenguajes no dice cuál lenguaje es “mejor”.
+
+
+
+Mide señales como búsquedas, uso reportado, comunidad o actividad pública, según la metodología de cada fuente.
+
+
+### Lectura útil para nosotros
+
+
+
+.callout[
+Para aprender analítica financiera, conviene usar una herramienta con mucha documentación y comunidad.]
+
+???
+**DOCENTE:** Si alguien pregunta si R está muerto: no. R está vivo y fuerte en estadística. El punto es que Python tiene mucho alcance transversal.
+
+
+
+---
+
+# Otra señal: comunidad de desarrolladores
+
+La encuesta de Stack Overflow 2025 reportó que Python aumentó su adopción frente a 2024 y lo asocia con IA, ciencia de datos y desarrollo backend.
+
+--
+
+### ¿Por qué esto le importa a un estudiante de finanzas?
+
+Porque cuando una herramienta tiene comunidad grande:
+
+- hay más tutoriales;
+- hay más ejemplos;
+- hay más soluciones a errores;
+- hay más librerías;
+- hay más demanda laboral.
+
+.footnote[Fuente: Stack Overflow Developer Survey 2025.]
+
+???
+**DOCENTE:** Puedes decir: “Cuando se queden atascados, no estarán solos. Muchas personas han tenido el mismo error antes”.
+
+---
+
+
+
+
+
+
+# Python en finanzas
+
+Python aparece en finanzas porque permite unir varias tareas en una sola cadena:
+
+1. descargar o importar datos;
+2. limpiar información;
+3. calcular retornos, tasas, indicadores y métricas;
+4. modelar escenarios;
+5. graficar;
+6. producir reportes reproducibles.
+
+--
+
+.orange[La fortaleza no es una fórmula aislada: es el flujo completo de trabajo.]
+
+???
+**DOCENTE:** Conecta con sesiones 5 a 8: pandas, series, API, beta. Hoy solo vemos el primer ladrillo.
+
+---
+
+class: center, middle, inverse
+
+# Parte 3
+## Python vs R: ¿Cristiano vs Messi?
+
+---
+
+# Python vs R: ¿son enemigos?
+
+.huge[No.]
+
+--
+
+### Mejor analogía
+
+No son enemigos: son dos jugadores muy buenos, con estilos distintos.
+
+--
+
+.callout[
+Cristiano vs Messi sirve como metáfora divertida, pero en la práctica muchos equipos usan ambos.
+]
+
+???
+**DOCENTE:** Usa humor. “La pregunta no es a quién amamos más, sino cuál herramienta resuelve mejor el problema que tenemos enfrente”.
+
+---
+
+# Lo que comparten Python y R
+
+Ambos permiten:
+
+- leer datos;
+- limpiar bases;
+- calcular indicadores;
+- hacer gráficos;
+- ajustar modelos estadísticos;
+- crear reportes reproducibles;
+- trabajar con paquetes/librerías de terceros.
+
+--
+
+.orange[La diferencia no es que uno pueda y el otro no. La diferencia suele estar en comodidad, ecosistema y objetivo.]
+
+???
+**DOCENTE:** Esta diapositiva evita polarizar. Tú has usado R; eso puede ser una ventaja para explicar la lógica general.
+
+---
+
+# R suele brillar en...
+
+- estadística académica;
+- econometría aplicada;
+- visualización con `ggplot2`;
+- documentos reproducibles con R Markdown;
+- análisis exploratorio rápido para investigación;
+- comunidades académicas y de ciencias sociales.
+
+--
+
+.callout[
+R es una herramienta excelente para investigación estadística y comunicación académica.]
+
+???
+**DOCENTE:** No critiques R. De hecho, estás dando estos slides en R Markdown/xaringan. Eso muestra que cada herramienta tiene su espacio.
+
+---
+
+# Python suele brillar en...
+
+- automatización de procesos;
+- integración con APIs;
+- ciencia de datos aplicada;
+- machine learning;
+- conexión con aplicaciones;
+- ecosistema de IA;
+- despliegue y producción.
+
+--
+
+.callout[
+Python es muy fuerte cuando el análisis debe conectarse con otros sistemas o repetirse con frecuencia.]
+
+???
+**DOCENTE:** Puedes decir: “En este curso usamos Python porque queremos una base general para datos, automatización, APIs y modelos”.
+
+---
+
+# Tabla honesta: Python vs R
+
+| Pregunta | R | Python |
+|---|---|---|
+| ¿Estadística clásica? | Muy fuerte | Fuerte |
+| ¿Machine learning aplicado? | Bueno | Muy fuerte |
+| ¿Reportes académicos? | Muy fuerte | Bueno |
+| ¿Automatización general? | Bueno | Muy fuerte |
+| ¿APIs y producción? | Bueno | Muy fuerte |
+| ¿Curva inicial? | Amigable en datos | Amigable en lógica general |
+
+???
+**DOCENTE:** Recuerda: esta tabla es pedagógica, no una verdad absoluta. Depende de equipo, problema y experiencia.
+
+---
+
+# Entonces, ¿cuál debe aprender un financiero?
+
+### Respuesta corta
+
+Depende del problema.
+
+--
+
+### Para investigación econométrica
+
+R puede ser más natural.
+
+### Para automatizar un flujo financiero con datos, API, modelo y reporte
+
+Python suele ser más flexible.
+
+### Para este curso
+
+Python será el lenguaje base, pero la lógica sirve para cualquier lenguaje.
+
+???
+**DOCENTE:** Puedes decir: “Quien ya sepa R no parte de cero. Ya entiende datos, objetos, funciones y lógica reproducible”.
+
+---
+
+# Excel tampoco es el enemigo
+
+| Excel gana cuando... | Python gana cuando... |
+|---|---|
+| El cálculo es puntual | El análisis se repite muchas veces |
+| La revisión es visual | Hay que documentar pasos exactos |
+| El archivo es pequeño | Los datos crecen |
+| La audiencia no programa | Se necesita automatizar |
+| Se explora rápido | Se requiere reproducibilidad |
+
+--
+
+.orange[Excel es más rápido para empezar. Python es más barato de mantener.]
+
+???
+**DOCENTE:** Esta frase es muy buena para clase. No pones a Excel como enemigo. Solo muestras cuándo empieza a quedarse corto.
+
+---
+
+# Un ejemplo concreto
+
+### En Excel
+
+Una tabla de amortización a 240 meses ocupa 240 filas.
+
+Si cambias la tasa, debes confiar en que todas las fórmulas fueron copiadas bien.
+
+--
+
+### En Python
+
+Cambias una tasa y vuelves a ejecutar.
+
+El código recalcula todo el proceso.
+
+--
+
+.callout[
+El beneficio aparece cuando el cálculo se repite, crece o debe auditarse.
+]
+
+???
+**DOCENTE:** Este ejemplo conecta perfecto con las siguientes sesiones del curso: ciclos y tabla de amortización.
+
+---
+
+class: center, middle, inverse
+
+# Parte 4
+## El ecosistema: notebook, Jupyter, Colab, Anaconda y VS Code
+
+---
+
+# ¿Qué es un archivo `.py`?
+
+Un archivo `.py` es un **script** de Python.
+
+--
+
+### Características
+
+- Es texto plano con código.
+- Se ejecuta normalmente de principio a fin.
+- Sirve para automatizar procesos.
+- Es común en proyectos más formales.
+
+--
+
+```python
+capital = 1000000
+tasa = 0.10
+print(capital * (1 + tasa))
+```
+
+???
+**DOCENTE:** Di: “Un script se parece a una receta completa: la ejecuto y se hacen todos los pasos”.
+
+---
+
+# ¿Qué es un archivo `.ipynb`?
+
+Un archivo `.ipynb` es un **notebook**.
+
+--
+
+### Características
+
+- Mezcla texto, código, resultados, ecuaciones y gráficos.
+- Se ejecuta por celdas.
+- Es ideal para aprender, explorar y explicar.
+- Es el formato que usa Colab y Jupyter Notebook.
+
+--
+
+.callout[
+Para clase usaremos notebooks porque permiten explicar y ejecutar en el mismo lugar.
+]
+
+???
+**DOCENTE:** IPYNB viene de IPython Notebook, el antecesor histórico del ecosistema Jupyter.
+
+---
+
+# ¿Qué es un notebook?
+
+Un notebook es un documento interactivo.
+
+--
+
+<div class="mock-browser">
+  <div class="mock-topbar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="mock-url">notebook_de_clase.ipynb</span></div>
+  <div class="mock-menu">Archivo · Editar · Ver · Insertar · Entorno de ejecución · Herramientas</div>
+  <div class="mock-body">
+    <div class="cell-text"><b>Celda de texto:</b> aquí explico el problema financiero.</div>
+    <div class="cell-code">capital = 20000000<br>tasa = 0.095<br>capital * (1 + tasa)</div>
+    <div class="cell-text"><b>Salida:</b> 21900000.0</div>
+  </div>
+</div>
+
+.small[Representación didáctica. La interfaz real de Colab puede cambiar.]
+
+???
+**DOCENTE:** Aquí puedes decir: “Piensen en un notebook como una mezcla entre Word, Excel y una consola de programación”.
+
+---
+
+# ¿Qué es Jupyter?
+
+Jupyter es un proyecto de software libre para computación interactiva.
+
+--
+
+### En términos prácticos
+
+Jupyter permite crear notebooks que combinan:
+
+- código;
+- texto explicativo;
+- gráficos;
+- fórmulas;
+- resultados.
+
+--
+
+### Importante
+
+Jupyter no es solo Python. También puede trabajar con R, Julia y otros lenguajes.
+
+.footnote[Fuente sugerida: Project Jupyter, documentación oficial.]
+
+???
+**DOCENTE:** Jupyter viene de Julia, Python y R, aunque hoy soporta muchos más lenguajes.
+
+---
+
+# ¿Qué es Google Colab?
+
+Google Colab es una forma de usar notebooks de Jupyter desde el navegador.
+
+--
+
+### Lo más importante para esta clase
+
+- No instalamos Python.
+- No instalamos librerías básicas.
+- Usamos una máquina virtual de Google.
+- El notebook se guarda en Google Drive.
+- Podemos compartirlo como un documento.
+
+--
+
+.orange[Colab es el camino más simple para empezar]
+
+.footnote[Fuente sugerida: Google Colab FAQ.]
+
+???
+**DOCENTE:** Dilo muy claro: “Hoy no vamos a instalar nada. Solo necesitamos navegador y cuenta de Google”.
+
+---
+
+# ¿Qué es el runtime o entorno de ejecución?
+
+El runtime es el computador temporal donde realmente corre el código.
+
+--
+
+Aunque tú escribes en el navegador, el código se ejecuta en una máquina virtual.
+
+--
+
+### Consecuencia importante
+
+Si el runtime se desconecta, se pierde la memoria de variables cargadas.
+
+El notebook sigue guardado, pero toca ejecutar nuevamente las celdas.
+
+???
+**DOCENTE:** Analogía: “El cuaderno queda guardado, pero la calculadora que lo estaba ejecutando se apagó”.
+
+---
+
+# ¿Qué es el kernel?
+
+El kernel es el proceso que ejecuta el código dentro del notebook.
+
+--
+
+### Forma sencilla de decirlo
+
+El notebook es el documento.
+
+El kernel es el motor que responde cuando ejecutamos una celda.
+
+--
+
+.callout[
+Si el kernel se reinicia, las variables desaparecen de memoria, aunque el texto del notebook siga intacto.
+]
+
+???
+**DOCENTE:** Colab usa mucho la palabra entorno de ejecución. Jupyter usa más la palabra kernel. Para principiantes, puedes tratarlas como ideas cercanas.
+
+---
+
+# ¿Qué es Anaconda?
+
+Anaconda es una distribución de Python pensada para ciencia de datos.
+
+--
+
+### ¿Qué trae?
+
+- Python instalado;
+- Jupyter Notebook y JupyterLab;
+- muchas librerías de datos;
+- un gestor de paquetes llamado `conda`;
+- una aplicación gráfica llamada Anaconda Navigator.
+
+--
+
+.orange[Anaconda sirve para trabajar localmente, sin depender de Colab.]
+
+.footnote[Fuente sugerida: documentación oficial de Anaconda.]
+
+???
+**DOCENTE:** No lo instales en clase. Solo explícalo para que sepan que Colab no es la única forma de usar Python.
+
+---
+
+# ¿Qué es VS Code?
+
+Visual Studio Code es un editor de código.
+
+--
+
+### ¿Para qué sirve?
+
+- escribir scripts `.py`;
+- organizar proyectos con carpetas;
+- trabajar con notebooks;
+- usar extensiones de Python;
+- conectarse con GitHub y otras herramientas.
+
+--
+
+.callout[
+VS Code es muy usado cuando el trabajo deja de ser un ejercicio de clase y se convierte en proyecto.]
+
+.footnote[Fuente sugerida: documentación oficial de Visual Studio Code.]
+
+???
+**DOCENTE:** VS Code no instala Python por sí solo. Es editor. Normalmente se combina con Python instalado o con ambientes.
+
+---
+
+# ¿Y Python instalado directamente?
+
+También se puede instalar Python desde `python.org`.
+
+--
+
+### Ventaja
+
+Es la instalación base oficial.
+
+### Desventaja para principiantes
+
+Después hay que aprender a manejar:
+
+- librerías;
+- versiones;
+- terminal;
+- rutas;
+- ambientes virtuales.
+
+--
+
+.orange[Por eso, para este curso, empezamos con Colab.]
+
+???
+**DOCENTE:** Si alguien quiere instalar, bien. Pero no conviertas la primera clase en soporte técnico de instalación.
+
+---
+
+# Mapa mental del ecosistema
+
+| Herramienta | Qué es | Cuándo aparece |
+|---|---|---|
+| Python | Lenguaje | Siempre |
+| `.py` | Script | Automatización |
+| `.ipynb` | Notebook | Clase, exploración, análisis |
+| Jupyter | Tecnología de notebooks | Local o servidor |
+| Colab | Jupyter en la nube de Google | Este curso |
+| Anaconda | Paquete local de ciencia de datos | Trabajo en computador propio |
+| VS Code | Editor de código | Proyectos más organizados |
+
+???
+**DOCENTE:** Esta tabla es una de las más importantes. Ayuda a que los estudiantes no confundan lenguaje, archivo, editor y entorno.
+
+---
+
+# ¿Tengo que instalar algo para este curso?
+
+.huge[No para empezar.]
+
+--
+
+### Por ahora necesitamos:
+
+1. navegador;
+2. cuenta de Google;
+3. entrar a Colab;
+4. crear o abrir un notebook;
+5. ejecutar celdas.
+
+--
+
+### Más adelante
+
+Podemos hablar de instalación local, Anaconda o VS Code si el proyecto lo exige.
+
+???
+**DOCENTE:** Esto tranquiliza. Hay estudiantes que llegan creyendo que deben tener todo instalado.
+
+---
+
+class: center, middle, inverse
+
+# Parte 5
+## Entrar a Google Colab paso a paso
+
+---
+
+# Paso 1: entrar a Colab
+
+### Ruta directa
+
+`https://colab.research.google.com/`
+
+--
+
+### Ruta alternativa
+
+Buscar en Google: **Google Colab**
+
+--
+
+### Requisito práctico
+
+Iniciar sesión con una cuenta de Google.
+
+--
+
+.callout[
+Recomendación: usar la misma cuenta donde quieran guardar los notebooks del curso.
+]
+
+???
+**DOCENTE:** Aquí sí puedes abrir el navegador y hacerlo en vivo. No te quedes solo en la diapositiva.
+
+---
+
+# Paso 2: crear un cuaderno nuevo
+
+En Colab, buscar una opción equivalente a:
+
+.orange[Nuevo cuaderno / New notebook]
+
+--
+
+Luego cambiar el nombre del archivo.
+
+--
+
+### Nombre sugerido
+
+`Clase_1.ipynb`
+
+--
+
+.small[La interfaz de Google puede cambiar. Lo importante es crear un notebook nuevo.]
+
+???
+**DOCENTE:** Si ves que en la interfaz aparece en inglés, traduce: New notebook = Nuevo cuaderno. File = Archivo. Runtime = Entorno de ejecución.
+
+---
+
+# Paso 3: reconocer la pantalla
+
+<div class="mock-browser">
+  <div class="mock-topbar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="mock-url">colab.research.google.com</span></div>
+  <div class="mock-menu"><b>Nombre del cuaderno</b> &nbsp;&nbsp; Archivo · Editar · Ver · Insertar · Entorno de ejecución</div>
+  <div class="mock-body">
+    <div class="cell-text"><span class="tag">+ Texto</span> celda para explicar</div>
+    <div class="cell-code"><span class="tag">▶ Código</span><br>print("Hola mundo financiero")</div>
+    <div class="cell-text"><b>Salida</b>: Hola mundo financiero</div>
+  </div>
+</div>
+
+.small[Representación didáctica: úsala como mapa, no como captura exacta.]
+
+???
+**DOCENTE:** Este slide te da seguridad para explicar aunque la pantalla de Colab cambie un poco.
+
+---
+
+# Paso 4: celda de texto vs celda de código
+
+| Tipo de celda | Sirve para | Ejemplo |
+|---|---|---|
+| Texto | Explicar el análisis | “Calcularemos el valor futuro de una inversión” |
+| Código | Ejecutar Python | `capital = 1000000` |
+
+--
+
+.orange[Un buen notebook no solo calcula: también cuenta qué se está haciendo.]
+
+???
+**DOCENTE:** Este mensaje es muy importante para que no entreguen notebooks con solo código. Deben explicar.
+
+---
+
+# Paso 5: ejecutar una celda
+
+Formas comunes:
+
+- clic en el botón ▶;
+- `Shift + Enter`;
+- menú de ejecución.
+
+--
+
+### Primera prueba
+
+```python
+print("Hola mundo financiero")
+```
+
+--
+
+.callout[
+Si aparece el resultado debajo, Python ya está funcionando.
+]
+
+???
+**DOCENTE:** Haz que todos ejecuten esta celda. Espera. No avances hasta que la mayoría lo tenga.
+
+---
+
+# Paso 6: entender el orden de ejecución
+
+Colab no ejecuta necesariamente de arriba hacia abajo.
+
+Ejecuta la celda que el usuario indique, cuando el usuario la indique.
+
+--
+
+```python
+tasa = 0.13
+```
+
+```python
+tasa = 0.25
+```
+
+```python
+print(tasa)
+```
+
+--
+
+.orange[Python imprimirá el último valor ejecutado, no el valor que visualmente “parece primero”.]
+
+???
+**DOCENTE:** Ejercicio en vivo: ejecuta tasa 0.13, luego print. Luego ejecuta tasa 0.25 y vuelve al print. Este es el error más importante de Colab.
+
+---
+
+# Paso 7: reiniciar y ejecutar todo
+
+Antes de entregar un notebook:
+
+1. reiniciar el entorno de ejecución;
+2. ejecutar todo desde el inicio;
+3. verificar que no haya errores.
+
+--
+
+### ¿Por qué?
+
+Porque así confirmamos que el notebook no depende de una celda ejecutada accidentalmente.
+
+--
+
+.callout[
+Un notebook serio debe correr completo desde cero.]
+
+???
+**DOCENTE:** En Colab busca Runtime / Entorno de ejecución. La traducción puede variar. No te cases con el nombre exacto del menú.
+
+---
+
+# Paso 8: guardar, copiar y compartir
+
+En Colab normalmente el notebook se guarda en Google Drive.
+
+--
+
+Opciones útiles:
+
+- cambiar nombre del archivo;
+- guardar una copia en Drive;
+- descargar `.ipynb`;
+- compartir enlace;
+- subir un notebook existente.
+
+--
+
+.small[Los notebooks de Colab están en formato abierto de Jupyter: `.ipynb`.]
+
+???
+**DOCENTE:** Para clase basta con que sepan guardar y compartir. No dediques demasiado tiempo a permisos.
+
+---
+
+# Algo importante sobre Colab
+
+Colab usa máquinas virtuales temporales.
+
+--
+
+### Traducción práctica
+
+- El notebook queda guardado.
+- Las variables en memoria pueden perderse.
+- Los archivos cargados temporalmente pueden desaparecer.
+- Si se desconecta, se vuelve a ejecutar.
+
+--
+
+.orange[Por eso el código debe estar completo y ordenado.]
+
+.footnote[Fuente sugerida: Google Colab FAQ sobre runtimes y máquinas virtuales.]
+
+???
+**DOCENTE:** Esto no debe asustar. Es normal. El punto es enseñarles a reproducir, no a confiar en memoria temporal.
+
+---
+
+# Errores normales al empezar en Colab
+
+| Síntoma | Posible causa | Qué hacer |
+|---|---|---|
+| La variable “no existe” | No ejecuté la celda anterior | Ejecutar desde arriba |
+| El resultado cambió raro | Ejecuté celdas en otro orden | Reiniciar y ejecutar todo |
+| Un número se comporta como texto | Vino de `input()` | Convertir con `float()` o `int()` |
+| El notebook no abre | Cuenta o permisos | Revisar sesión de Google |
+
+???
+**DOCENTE:** Tranquiliza: equivocarse no es fracasar. Debuggear es parte del trabajo.
+
+---
+
+class: center, middle, inverse
+
+# Parte 6
+## Ahora sí: primer script en Python
+
+---
+
+# Primera celda: Hola mundo financiero
+
+```python
+print("Hola mundo financiero")
+```
+
+--
+
+### ¿Qué está pasando?
+
+- `print()` es una función.
+- Lo que está entre comillas es texto.
+- Python ejecuta la instrucción y muestra una salida.
+
+--
+
+.orange[Esta es la primera conversación con Python.]
+
+???
+**DOCENTE:** No subestimes este momento. Para alguien que nunca programó, ver salir el texto ya es un logro.
+
+---
+
+# Comentarios: hablarle al humano
+
+En Python, el símbolo `#` crea un comentario.
+
+--
+
+```python
+# Este comentario no lo ejecuta Python
+# Sirve para explicar el código a una persona
+
+capital = 1_000_000  # capital inicial de la inversión
+```
+
+--
+
+.callout[
+El código se escribe para la máquina, pero también para la persona que lo leerá después.]
+
+???
+**DOCENTE:** Diles que comenten breve. No cada palabra. Comentarios útiles, no novelas.
+
+---
+
+# Variables: guardar información
+
+```python
+capital = 30_000_000
+tasa_ea = 0.25
+plazo_meses = 48
+cliente = "Cliente A"
+tiene_codeudor = True
+```
+
+--
+
+### Lectura correcta
+
+`capital = 30_000_000` significa:
+
+.orange[guarde el valor 30.000.000 con el nombre capital]
+
+???
+**DOCENTE:** El signo igual aquí no es igualdad matemática. Es asignación.
+
+---
+
+# Una rareza útil: guion bajo en números
+
+```python
+capital_1 = 30000000
+capital_2 = 30_000_000
+
+print(capital_1)
+print(capital_2)
+```
+
+--
+
+Ambos valores son iguales.
+
+--
+
+### ¿Para qué sirve?
+
+Para leer mejor números grandes.
+
+--
+
+.orange[En finanzas, la legibilidad evita errores de ceros.]
+
+???
+**DOCENTE:** Pregunta: ¿cuántos ceros tiene 30000000? Con guiones bajos se ve más fácil.
+
+---
+
+# Cómo nombrar variables en Python
+
+| Regla | Ejemplo recomendado | Evitar |
+|---|---|---|
+| minúsculas | `capital` | `Capital` |
+| guion bajo | `tasa_mensual` | `tasaMensual` |
+| sin espacios | `plazo_meses` | `plazo meses` |
+| sin tildes | `anios` | `años` |
+| unidad clara | `tasa_ea` | `tasa` |
+
+--
+
+.callout[
+En finanzas, el nombre debe decir la unidad: anual, mensual, días, años, pesos, porcentaje.]
+
+???
+**DOCENTE:** Python permite algunos nombres con tildes, pero en clase no los uses. Evitas problemas de compatibilidad y estilo.
+
+---
+
+# PEP 8: estilo, no castigo
+
+PEP 8 es la guía de estilo más conocida de Python.
+
+--
+
+### Idea para principiantes
+
+No es que el código no corra si no sigues PEP 8.
+
+Pero seguir convenciones hace que otros puedan leer tu código.
+
+--
+
+### En este curso
+
+Usaremos nombres como:
+
+```python
+tasa_ea
+saldo_capital
+plazo_meses
+valor_presente
+```
+
+???
+**DOCENTE:** No profundices en PEP 8. Solo usa esto para justificar nombres claros.
+
+---
+
+# Tipos de datos básicos
+
+| Tipo | Guarda | Ejemplo financiero |
+|---|---|---|
+| `int` | Enteros | `plazo_meses = 48` |
+| `float` | Decimales | `tasa_ea = 0.25` |
+| `str` | Texto | `cliente = "Empresa ABC"` |
+| `bool` | Verdadero/falso | `tiene_codeudor = True` |
+
+--
+
+.orange[El tipo define qué operaciones son posibles.]
+
+???
+**DOCENTE:** True y False van con mayúscula inicial. Python distingue mayúsculas de minúsculas.
+
+---
+
+# Ante la duda: `type()`
+
+```python
+capital = 30_000_000
+tasa_ea = 0.25
+cliente = "Empresa ABC"
+tiene_codeudor = True
+
+print(type(capital))
+print(type(tasa_ea))
+print(type(cliente))
+print(type(tiene_codeudor))
+```
+
+--
+
+### Pregunta
+
+¿Cuál variable representa una condición de verdadero/falso?
+
+???
+**DOCENTE:** Espera que respondan `tiene_codeudor`. Si nadie responde, vuelve a la tabla anterior.
+
+---
+
+# Cosas raras de Python que conviene saber
+
+| Símbolo o regla | Qué significa |
+|---|---|
+| `=` | asignar un valor a un nombre |
+| `#` | comentario |
+| `"texto"` | texto o string |
+| `.` | separador decimal |
+| `_` en números | separador visual de miles |
+| Mayúsculas | importan: `True` no es `true` |
+| Espacios al inicio | pueden tener significado en bloques |
+
+???
+**DOCENTE:** La indentación se profundiza en condicionales. Hoy solo anuncia que Python es sensible a espacios al inicio de línea.
+
+---
+
+# Texto no es número
+
+Esto parece número, pero es texto:
+
+```python
+saldo = "4500000"
+```
+
+--
+
+Esto sí es número:
+
+```python
+saldo = 4500000
+```
+
+--
+
+### ¿Por qué importa?
+
+```python
+"25" + "3"
+```
+
+devuelve:
+
+```python
+"253"
+```
+
+.no-highlight[]
+
+???
+**DOCENTE:** Este ejemplo suele sorprender. Es perfecto para mostrar que el tipo importa.
+
+---
+
+# Convertir tipos
+
+```python
+float("0.25")   # texto a decimal
+int("48")       # texto a entero
+str(30000000)   # número a texto
+```
+
+--
+
+### Cuidado
+
+```python
+int(4.9)     # devuelve 4, no 5
+round(4.9)   # devuelve 5
+```
+
+--
+
+.orange[`int()` trunca. `round()` redondea. No son lo mismo.]
+
+???
+**DOCENTE:** En cálculo financiero, truncar por error puede afectar cuotas, días o conteos.
+
+---
+
+# Listas: el primer “vector” en Python
+
+En R solemos pensar en vectores.
+
+En Python, una estructura básica parecida para empezar es la lista.
+
+--
+
+```python
+tasas = [0.08, 0.10, 0.12]
+clientes = ["A", "B", "C"]
+```
+
+--
+
+### ¿Para qué sirve?
+
+Para guardar varios valores bajo un solo nombre.
+
+--
+
+.orange[Hoy solo las presentamos. Las trabajaremos con más detalle en la sesión de ciclos.]
+
+???
+**DOCENTE:** No te metas en slicing largo. Solo muestra que se pueden guardar varios valores.
+
+---
+
+# Operadores aritméticos
+
+| Operador | Qué hace | Ejemplo |
+|---|---|---|
+| `+` | suma | `capital + interes` |
+| `-` | resta | `ingresos - costos` |
+| `*` | multiplicación | `capital * tasa` |
+| `/` | división | `tasa_ea / 12` |
+| `**` | potencia | `(1 + tasa) ** anios` |
+
+--
+
+.callout[
+Cuando la fórmula tenga varias operaciones, usa paréntesis aunque creas que no hacen falta.
+]
+
+???
+**DOCENTE:** En finanzas los paréntesis salvan. No dependas de la memoria del orden de operaciones.
+
+---
+
+# Porcentajes en Python
+
+En Python una tasa se escribe como decimal.
+
+| Tasa financiera | En Python |
+|---|---|
+| 10% | `0.10` |
+| 12,5% | `0.125` |
+| 25% | `0.25` |
+| 1,5% mensual | `0.015` |
+
+--
+
+.orange[No escribimos `25%`. Escribimos `0.25`.]
+
+???
+**DOCENTE:** Este error es común. Si alguien escribe 25 pensando en 25%, el cálculo queda 100 veces más grande.
+
+---
+
+# Mostrar resultados con `print()`
+
+```python
+interes = 7_500_000
+print(interes)
+```
+
+--
+
+Salida:
+
+```python
+7500000
+```
+
+--
+
+### Más legible
+
+```python
+print(f"Interés: ${interes:,.0f}")
+```
+
+Salida:
+
+```python
+Interés: $7,500,000
+```
+
+???
+**DOCENTE:** Explica: la `f` permite meter variables dentro de llaves. `:,.0f` muestra miles y cero decimales.
+
+---
+
+# Mostrar tasas como porcentaje
+
+```python
+tasa = 0.25
+print(f"Tasa: {tasa:.2%}")
+```
+
+--
+
+Salida:
+
+```python
+Tasa: 25.00%
+```
+
+--
+
+### Formatos útiles
+
+| Formato | Uso |
+|---|---|
+| `:,.0f` | moneda sin decimales |
+| `:.2f` | dos decimales |
+| `:.2%` | porcentaje con dos decimales |
+
+???
+**DOCENTE:** No profundices en todos los formatos. Estos tres bastan para la primera sesión.
+
+---
+
+# `input()` pide datos al usuario
+
+```python
+capital = input("Ingrese el capital: ")
+```
+
+--
+
+### Pero cuidado
+
+`input()` siempre devuelve texto.
+
+Aunque el usuario escriba un número.
+
+--
+
+```python
+capital = float(input("Ingrese el capital: "))
+plazo_anios = int(input("Ingrese el plazo en años: "))
+```
+
+???
+**DOCENTE:** Si no convierten, no podrán multiplicar bien. Repite esto varias veces.
+
+---
+
+# Mini práctica guiada 1
+
+Crear variables para un crédito de consumo:
+
+- monto: $30.000.000;
+- tasa efectiva anual: 25%;
+- plazo: 48 meses;
+- cliente: “Cliente A”;
+- tiene codeudor: sí.
+
+--
+
+### Instrucciones
+
+1. Crear una variable por cada dato.
+2. Verificar el tipo con `type()`.
+3. Calcular una tasa mensual aproximada: `tasa_ea / 12`.
+4. Calcular el interés del primer mes.
+
+???
+**DOCENTE:** Esto lo haces en Colab, lento. No lo resuelvas completo en la diapositiva.
+
+---
+
+class: center, middle, inverse
+
+# Parte 7
+## Aplicación: tasas e interés
+
+---
+
+# El valor del dinero en el tiempo
+
+Un peso hoy no equivale a un peso dentro de un año.
+
+--
+
+No solo por inflación.
+
+También porque el dinero disponible hoy puede invertirse.
+
+--
+
+### Dos verbos clave
+
+- **Capitalizar:** llevar dinero hacia el futuro.
+- **Descontar:** traer dinero futuro al presente.
+
+???
+**DOCENTE:** Este es el puente entre programación y finanzas. No es código por código.
+
+---
+
+# Cuatro términos financieros de hoy
+
+| Término | Definición operativa |
+|---|---|
+| Capital | Monto inicial o principal |
+| Tasa | Precio del dinero por periodo |
+| Periodo | Número de veces que se aplica la tasa |
+| Capitalización | Frecuencia con que los intereses se suman al capital |
+
+--
+
+.orange[La tasa y el periodo deben estar en la misma unidad.]
+
+???
+**DOCENTE:** Mucho cuidado con tasa anual y plazo mensual. Esa es una fuente central de errores.
+
+---
+
+# Interés simple
+
+### Fórmula
+
+$$VF = C(1+i * n)$$
+
+--
+
+### Código
+
+```python
+capital = 10_000_000
+tasa_ea = 0.12
+anios = 3
+
+vf_simple = capital * (1 + tasa_ea * anios)
+print(f"Valor futuro simple: ${vf_simple:,.0f}")
+```
+
+???
+**DOCENTE:** Lee la fórmula y luego el código. Muestra que la traducción es casi literal.
+
+---
+
+# Interés compuesto
+
+### Fórmula
+
+$$VF = C(1+i)^n$$
+
+--
+
+### Código
+
+```python
+vf_compuesto = capital * (1 + tasa_ea) ** anios
+print(f"Valor futuro compuesto: ${vf_compuesto:,.0f}")
+```
+
+--
+
+.orange[En interés compuesto, los intereses generan nuevos intereses.]
+
+???
+**DOCENTE:** El cambio entre `* anios` y `** anios` parece pequeño, pero financieramente es enorme.
+
+---
+
+# Simple vs compuesto
+
+| Concepto | Simple | Compuesto |
+|---|---|---|
+| Base de cálculo | Capital inicial | Capital acumulado |
+| Crecimiento | Lineal | Exponencial |
+| Intereses sobre intereses | No | Sí |
+| Uso típico | Aproximaciones o contextos específicos | Productos financieros reales |
+
+--
+
+.callout[
+El código no decide cuál usar. La decisión depende del producto financiero.]
+
+???
+**DOCENTE:** Este es un buen momento para preguntar: ¿cuál se parece más a una cuenta de ahorro, fondo o inversión reinvertida?
+
+---
+
+# Valor presente
+
+### Fórmula
+
+$$VP = \frac{VF}{(1+i)^n}$$
+
+--
+
+### Código
+
+```python
+valor_futuro = 50_000_000
+tasa_descuento = 0.10
+anios = 5
+
+valor_presente = valor_futuro / (1 + tasa_descuento) ** anios
+print(f"Valor presente: ${valor_presente:,.0f}")
+```
+
+???
+**DOCENTE:** Capitalizar multiplica hacia el futuro; descontar divide para traer al presente.
+
+---
+
+# Tasa mensual: aproximada vs equivalente
+
+Una tasa efectiva anual de 25% no necesariamente se convierte bien dividiendo entre 12.
+
+--
+
+### Aproximación simple
+
+```python
+tasa_mensual_aprox = 0.25 / 12
+```
+
+### Equivalente mensual
+
+```python
+tasa_mensual_eq = (1 + 0.25) ** (1/12) - 1
+```
+
+--
+
+.orange[La diferencia parece pequeña, pero en carteras grandes puede importar.]
+
+???
+**DOCENTE:** No te detengas demasiado en matemática financiera. Solo muestra que Python ayuda a verificar detalles.
+
+---
+
+# Mini práctica guiada 2
+
+Comparar dos alternativas para $20.000.000 durante 3 años.
+
+### Opción A: CDT
+
+9,5% efectivo anual, capitalización anual.
+
+### Opción B: Fondo
+
+9,0% efectivo anual + bono final de $400.000.
+
+--
+
+### Preguntas
+
+1. ¿Cuál deja mayor valor futuro?
+2. ¿A partir de qué bono la opción B empata con la A?
+
+???
+**DOCENTE:** Resuelve en Colab. Esta mini práctica es el puente hacia la actividad en salas.
+
+---
+
+# Script guía: estructura sugerida
+
+```python
+# 1. Definir datos del problema
+capital = 20_000_000
+tasa_cdt = 0.095
+tasa_fondo = 0.09
+anios = 3
+bono = 400_000
+
+# 2. Calcular valores futuros
+vf_cdt = capital * (1 + tasa_cdt) ** anios
+vf_fondo = capital * (1 + tasa_fondo) ** anios + bono
+
+# 3. Mostrar resultados
+print(f"CDT: ${vf_cdt:,.0f}")
+print(f"Fondo: ${vf_fondo:,.0f}")
+```
+
+???
+**DOCENTE:** No copies y pegues demasiado rápido. Escribe línea por línea o ejecuta por bloques pequeños.
+
+---
+
+# Interpretar no es opcional
+
+Después del cálculo, siempre debe venir una frase de negocio.
+
+--
+
+```python
+diferencia = vf_cdt - vf_fondo
+print(f"Diferencia a favor del CDT: ${diferencia:,.0f}")
+```
+
+--
+
+### Frase esperada
+
+“Bajo estos supuestos, conviene la alternativa que entregue mayor valor futuro.”
+
+--
+
+.orange[El resultado numérico necesita interpretación financiera.]
+
+???
+**DOCENTE:** Desde la primera clase exige una frase de interpretación. Así preparas los talleres posteriores.
+
+---
+
+class: center, middle, inverse
+
+# Parte 8
+## Actividad corta en salas
+
+---
+
+# Actividad: calculadora financiera simple
+
+En grupos, construyan un notebook que compare dos alternativas de inversión.
+
+--
+
+### Datos base
+
+Un cliente tiene **$15.000.000** para invertir durante **4 años**.
+
+| Alternativa | Condición |
+|---|---|
+| A | 10,2% efectivo anual |
+| B | 9,7% efectivo anual + bono final de $350.000 |
+
+???
+**DOCENTE:** Esta actividad es corta. La idea es que usen variables, operaciones, print y comentarios.
+
+---
+
+# Lo que debe tener el notebook
+
+1. Título en una celda de texto.
+2. Breve explicación del problema.
+3. Variables con nombres claros.
+4. Revisión de tipos con `type()`.
+5. Cálculo de valor futuro compuesto para A y B.
+6. Resultados formateados como moneda.
+7. Diferencia entre alternativas.
+8. Una frase final con la decisión.
+
+???
+**DOCENTE:** Dales 30 a 40 minutos según el ritmo. Tú recorres salas y haces preguntas.
+
+---
+
+# Preguntas guía para salas
+
+- ¿Qué datos son números enteros?
+- ¿Qué datos son decimales?
+- ¿Dónde aparece texto?
+- ¿La tasa está escrita como porcentaje o como decimal?
+- ¿El plazo está en la misma unidad que la tasa?
+- ¿Qué alternativa entrega mayor valor futuro?
+- ¿Qué tendría que pasar para que la otra alternativa fuera mejor?
+
+???
+**DOCENTE:** Estas preguntas te ayudan a orientar sin darles la solución.
+
+---
+
+
+# Fuentes y referencias para esta sesión
+
+.small[
+- Microcurrículo oficial del curso: Introducción a la programación para analítica financiera.
+- Material benchmark de la Sesión 1 del profesor Juan Sebastián Chacón.
+- Project Jupyter: documentación oficial sobre notebooks.
+- Google Colab FAQ: notebooks, runtimes y almacenamiento.
+- Anaconda: documentación oficial sobre distribución, conda y Navigator.
+- Visual Studio Code: documentación oficial del editor.
+- Stack Overflow Developer Survey 2025.
+- TIOBE Programming Community Index, septiembre de 2026.
+- McKinney, W. *Python for Data Analysis*.
+- VanderPlas, J. *Python Data Science Handbook*.
+- Hilpisch, Y. *Python for Finance*.
+]
+
+???
+**DOCENTE:** Esta diapositiva no necesariamente la presentas completa. Sirve para respaldo del material.
