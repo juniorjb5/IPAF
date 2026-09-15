@@ -1,0 +1,867 @@
+---
+title: "Lógica, listas y ciclos en Python"
+subtitle: "<br/> Decisiones y automatización financiera"
+author: "Orlando Joaqui-Barandica"
+institute: "Universidad del Valle"
+date: "Sesiones 2 y 3"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: 
+      - default
+      - rladies
+      - rladies-fonts
+      - fonts_mtheme.css
+      - sidney.css
+    seal: false  
+    nature: 
+      ratio: 16:9
+      beforeInit: "macros.js"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+
+---
+
+```{r setup, include = FALSE}
+library(knitr)
+library(tidyverse)
+
+knitr::opts_chunk$set(echo = TRUE,
+                      dpi = 300,
+                      warning = FALSE,
+                      message = FALSE,
+                      error = FALSE)
+
+options(htmltools.dir.version = FALSE)
+
+xaringanExtra::use_share_again()
+
+
+xaringanExtra::use_clipboard()
+
+xaringanExtra::use_xaringan_extra("tile_view")
+```
+
+class: inverse, left, bottom
+background-image: url("img/fondo.jpg")
+background-size: cover
+
+
+<style>
+.remark-slide-content {
+  font-size: 25px;
+}
+.remark-slide-content h1 {
+  color: #1F3D59;
+  font-weight: 700;
+}
+
+
+
+
+.remark-slide-content h2, .remark-slide-content h3 {
+  color: #BB7E17;
+}
+.orange {
+  color: #BB7E17;
+  font-weight: 700;
+}
+.blue {
+  color: #1F3D59;
+  font-weight: 700;
+}
+.gray {
+  color: #5f6b73;
+}
+.small {
+  font-size: 18px;
+}
+.medium {
+  font-size: 22px;
+}
+.big {
+  font-size: 36px;
+}
+.huge {
+  font-size: 52px;
+}
+.pull-left-55 {
+  float: left;
+  width: 55%;
+}
+.pull-right-40 {
+  float: right;
+  width: 40%;
+}
+.callout {
+  background: #eef3f6;
+  border-left: 8px solid #BB7E17;
+  padding: 16px 22px;
+  margin-top: 18px;
+  border-radius: 10px;
+}
+.note-box {
+  background: #F7F7F7;
+  border: 1px solid #D9DEE2;
+  padding: 14px 20px;
+  border-radius: 10px;
+}
+.mock-browser {
+  border: 2px solid #D5DADD;
+  border-radius: 14px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.09);
+  font-size: 18px;
+}
+.mock-topbar {
+  background: #eef3f6;
+  padding: 10px 14px;
+  color: #46545c;
+  border-bottom: 1px solid #D5DADD;
+}
+.dot { display:inline-block; width:11px; height:11px; border-radius:50%; background:#C9CED3; margin-right:5px; }
+.mock-url {
+  display:inline-block;
+  margin-left:12px;
+  padding: 4px 12px;
+  background:white;
+  border-radius: 14px;
+  color:#6A737B;
+  width: 70%;
+}
+.mock-menu {
+  background: #fff;
+  padding: 10px 14px;
+  border-bottom: 1px solid #E4E7EA;
+  color:#1F3D59;
+}
+.mock-body {
+  padding: 16px;
+}
+.cell-text {
+  border: 1px solid #D9DEE2;
+  background: #FAFAFA;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+}
+.cell-code {
+  border: 1px solid #D9DEE2;
+  background: #16232E;
+  color: #F2F5F7;
+  padding: 12px;
+  border-radius: 10px;
+  font-family: Consolas, Monaco, monospace;
+  margin-bottom: 12px;
+}
+.tag {
+  display: inline-block;
+  background: #1F3D59;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.timeline {
+  border-left: 5px solid #1F3D59;
+  margin-left: 20px;
+  padding-left: 22px;
+}
+.timeline p {
+  margin: 10px 0;
+}
+.footnote {
+  font-size: 14px;
+  color: #6A737B;
+  position: absolute;
+  bottom: 18px;
+  left: 55px;
+  right: 55px;
+}
+.code-small pre {
+  font-size: 17px !important;
+}
+
+
+
+/* Títulos blancos cuando el slide tiene fondo oscuro */
+.inverse h1 {
+  color: #FFFFFF !important;
+}
+
+/* Título principal de la portada */
+.title-slide h1 {
+  color: #FFFFFF !important;
+}
+
+
+
+/* Título principal de la portada */
+.portada h1 {
+  color: #FFFFFF !important;
+}
+
+/* Títulos principales en diapositivas inverse */
+.inverse h1 {
+  color: #FFFFFF !important;
+}
+
+</style>
+
+
+
+
+# **`r rmarkdown::metadata$title`**
+----
+
+## **`r rmarkdown::metadata$subtitle`**
+
+### `r rmarkdown::metadata$author`
+### `r rmarkdown::metadata$date`
+
+---
+
+class: center, middle, inverse
+
+# Ruta de la sesión de hoy
+
+## lógica → decisiones → listas → ciclos → amortización → actividad
+
+<br>
+
+.orange[La meta es pasar de “Python calcula” a “Python decide y repite una lógica financiera”.]
+
+???
+**DOCENTE:** Esta clase fusiona las sesiones 2 y 3. No necesitamos correr. La idea es que entiendan tres estructuras: decidir, guardar varios valores y repetir instrucciones.
+
+---
+
+# ¿Qué cambia frente a la Clase 1?
+
+En la primera sesión Python ejecutaba cálculos en línea recta.
+
+--
+
+Hoy agregamos tres capacidades:
+
+1. **Decidir:** ejecutar algo solo si se cumple una condición.
+2. **Guardar varios valores:** trabajar con listas.
+3. **Repetir:** usar ciclos para no copiar la misma fórmula muchas veces.
+
+--
+
+.callout[
+Con estas tres ideas podemos construir un motor de crédito y una tabla de amortización.
+]
+
+???
+**DOCENTE:** Conecta explícitamente con la Clase 1: ya saben variables, tasas, operaciones y `print()`. Hoy reorganizamos esas piezas.
+
+---
+
+# Objetivos de aprendizaje
+
+Al finalizar la sesión, el estudiante debe poder:
+
+1. construir comparaciones que devuelvan `True` o `False`;
+2. combinar reglas con `and`, `or` y `not`;
+3. escribir decisiones con `if / elif / else`;
+4. crear, indexar y recortar listas;
+5. recorrer datos con `for` y `while`;
+6. usar `range()` y un acumulador;
+7. construir una amortización sencilla.
+
+???
+**DOCENTE:** No introduzcas funciones, diccionarios ni pandas. Eso viene después. Esta sesión debe quedarse en lógica básica.
+
+---
+
+class: center, middle, inverse
+
+# Parte 1
+## Condicionales y lógica
+
+---
+
+# Comparar produce `True` o `False`
+
+```python
+score = 720
+endeudamiento = 0.32
+```
+
+| Pregunta | Python | Resultado |
+|---|---|---|
+| ¿Score mínimo? | `score >= 700` | `True` |
+| ¿Score bajo? | `score < 650` | `False` |
+| ¿Deuda aceptable? | `endeudamiento <= 0.40` | `True` |
+| ¿Exactamente 720? | `score == 720` | `True` |
+
+--
+
+.callout[
+`=` asigna un valor. `==` compara dos valores.
+]
+
+???
+**DOCENTE:** Haz dos o tres preguntas verbales antes de ejecutar. La lógica de Python es la misma lógica cotidiana, escrita de manera formal.
+
+---
+
+# Combinar reglas: `and`, `or`, `not`
+
+```python
+score = 710
+endeudamiento = 0.35
+antiguedad_meses = 18
+tiene_mora = False
+```
+
+```python
+cumple = (
+    score >= 700
+    and endeudamiento <= 0.40
+    and antiguedad_meses >= 12
+    and not tiene_mora
+)
+```
+
+--
+
+| Operador | Lectura |
+|---|---|
+| `and` | todas deben cumplirse |
+| `or` | basta con una |
+| `not` | invierte `True` / `False` |
+
+???
+**DOCENTE:** Recalca que primero existe la regla de negocio y después la traducimos a Python. El código no inventa la política crediticia.
+
+---
+
+# `if / else`: dos caminos
+
+```python
+if endeudamiento <= 0.40:
+    print("Nivel aceptable")
+else:
+    print("Nivel alto")
+```
+
+--
+
+### Dos detalles
+
+- La condición termina con `:`.
+- Las líneas que pertenecen al bloque van indentadas.
+
+--
+
+.orange[La indentación define la estructura del programa.]
+
+???
+**DOCENTE:** Si quieres, escribe una línea sin indentación para mostrar el error. No hace falta entrar en mensajes técnicos todavía.
+
+---
+
+# `if / elif / else`: motor de reglas
+
+```python
+if (
+    score >= 700
+    and endeudamiento <= 0.40
+    and antiguedad_meses >= 12
+    and not tiene_mora
+):
+    decision = "APROBADO"
+elif score >= 650 and endeudamiento <= 0.50 and not tiene_mora:
+    decision = "REVISIÓN"
+else:
+    decision = "NEGADO"
+
+print(decision)
+```
+
+--
+
+.orange[Python evalúa de arriba hacia abajo y se queda con el primer bloque verdadero.]
+
+???
+**DOCENTE:** Cambia en vivo `score = 680` y luego `tiene_mora = True`. Es mejor mostrar sensibilidad de la decisión que agregar más teoría.
+
+---
+
+# Tres errores muy comunes
+
+### 1. Confundir asignación y comparación
+`score = 700` vs `score == 700`
+
+### 2. Olvidar la indentación
+El bloque del `if` debe quedar desplazado.
+
+### 3. Escribir reglas en mal orden
+Una condición muy general puede capturar el caso antes de llegar al `elif`.
+
+--
+
+.callout[
+Antes de ejecutar, trate de predecir qué decisión debería salir.
+]
+
+???
+**DOCENTE:** Este slide sirve como pausa corta antes de pasar a listas. No profundices más en control de flujo.
+
+---
+
+class: center, middle, inverse
+
+# Parte 2
+## Listas: varios valores bajo un mismo nombre
+
+---
+
+# Crear, indexar y recortar una lista
+
+```python
+flujos = [-10_000_000, 3_000_000, 4_000_000, 5_000_000]
+```
+
+```python
+flujos[0]    # primer valor
+flujos[1]    # segundo valor
+flujos[-1]   # último valor
+flujos[:2]   # primeros dos
+flujos[-2:]  # últimos dos
+```
+
+--
+
+.callout[
+Python empieza a contar desde cero y el límite derecho del slicing no se incluye.
+]
+
+???
+**DOCENTE:** Pregunta cuál es `flujos[2]`. La respuesta es 4.000.000. No conviertas slicing en un tema largo.
+
+---
+
+# Operaciones mínimas con listas
+
+```python
+cuotas = [850_000, 850_000, 850_000]
+
+len(cuotas)
+sum(cuotas)
+cuotas.append(850_000)
+```
+
+--
+
+| Expresión | Qué hace |
+|---|---|
+| `len(lista)` | cuenta elementos |
+| `sum(lista)` | suma valores numéricos |
+| `lista.append(x)` | agrega un elemento al final |
+
+--
+
+.orange[`append()` será clave para guardar cada periodo de la amortización.]
+
+???
+**DOCENTE:** No necesitas explicar “métodos” formalmente. Solo muestra que una lista puede crecer a medida que avanza el cálculo.
+
+---
+
+class: center, middle, inverse
+
+# Parte 3
+## Ciclos: repetir sin copiar y pegar
+
+---
+
+# `for` y `range()`
+
+### Recorrer valores
+
+```python
+for flujo in flujos:
+    print(flujo)
+```
+
+### Recorrer periodos
+
+```python
+for mes in range(1, 6):
+    print(mes)
+```
+
+--
+
+.orange[`range(1, 6)` genera 1, 2, 3, 4 y 5.]
+
+???
+**DOCENTE:** Lee el primer ciclo en español: “para cada flujo dentro de flujos…”. Conecta el segundo con un crédito: `range(1, 25)` son 24 meses.
+
+---
+
+# Acumulador: recordar lo que llevamos
+
+```python
+flujos = [-10_000_000, 3_000_000, 4_000_000, 5_000_000]
+acumulado = 0
+
+for periodo in range(len(flujos)):
+    flujo = flujos[periodo]
+    acumulado += flujo
+    print(periodo, flujo, acumulado)
+```
+
+--
+
+### Aplicación
+
+Ver cómo cambia un flujo acumulado periodo a periodo.
+
+--
+
+.orange[`total += valor` es el patrón que usaremos para acumular intereses.]
+
+???
+**DOCENTE:** No introduzcas VAN todavía. Solo muestra que una serie puede analizarse periodo a periodo y que el acumulador guarda memoria del recorrido.
+
+---
+
+# `while`: repetir hasta alcanzar una condición
+
+```python
+meta = 3_000_000
+ahorro = 0
+mes = 0
+
+while ahorro < meta:
+    ahorro += 500_000
+    mes += 1
+```
+
+--
+
+| Situación | Conviene |
+|---|---|
+| Crédito de 24 meses | `for` |
+| Recorrer flujos | `for` |
+| Ahorrar hasta una meta | `while` |
+
+--
+
+.callout[
+En un `while` debemos modificar la variable que controla la condición, o el ciclo puede no terminar.
+]
+
+???
+**DOCENTE:** Esta es suficiente profundidad para `while`. El caso de ahorro es intuitivo y evita ciclos infinitos durante la explicación.
+
+---
+
+class: center, middle, inverse
+
+# Parte 4
+## Aplicación integrada: crédito + amortización
+
+---
+
+# Caso guiado
+
+Un cliente solicita **$20.000.000** a **24 meses** con tasa de **19% E.A.**
+
+Además:
+
+- ingreso mensual: $7.000.000;
+- obligaciones actuales: $1.300.000;
+- score: 725;
+- antigüedad laboral: 30 meses;
+- mora actual: no.
+
+--
+
+.orange[Primero decidimos. Si el crédito no es negado, construimos su plan de pagos.]
+
+???
+**DOCENTE:** Este caso une todo. Trabájalo en el notebook guía y usa las diapositivas solo como mapa conceptual.
+
+---
+
+# Cuota y capacidad de pago
+
+```python
+tasa_mensual = (1 + tasa_ea) ** (1 / 12) - 1
+
+cuota = monto * (
+    tasa_mensual * (1 + tasa_mensual) ** plazo
+) / ((1 + tasa_mensual) ** plazo - 1)
+
+endeudamiento_total = (obligaciones + cuota) / ingreso
+```
+
+--
+
+```python
+print(f"Cuota: ${cuota:,.0f}")
+print(f"Endeudamiento: {endeudamiento_total:.2%}")
+```
+
+.orange[La nueva cuota debe entrar en la evaluación de capacidad de pago.]
+
+???
+**DOCENTE:** No derives la fórmula de cuota. El objetivo es usar el resultado como insumo de la lógica.
+
+---
+
+# Decidir antes de amortizar
+
+```python
+if (
+    score >= 700
+    and endeudamiento_total <= 0.40
+    and antiguedad_meses >= 12
+    and not tiene_mora
+):
+    decision = "APROBADO"
+elif score >= 650 and endeudamiento_total <= 0.50 and not tiene_mora:
+    decision = "REVISIÓN"
+else:
+    decision = "NEGADO"
+```
+
+--
+
+.callout[
+La decisión es explícita: podemos ver qué regla produjo el resultado y cambiarla si cambia la política.
+]
+
+???
+**DOCENTE:** Aclara que las reglas son didácticas y no representan la política real de un banco.
+
+---
+
+# Guardar la historia del crédito
+
+```python
+periodos = []
+saldos_iniciales = []
+intereses = []
+abonos_capital = []
+saldos_finales = []
+```
+
+--
+
+En cada mes guardaremos:
+
+**saldo inicial → interés → abono → saldo final**
+
+--
+
+.orange[Las listas conservan los 24 periodos, no solo el resultado final.]
+
+???
+**DOCENTE:** Más adelante pandas hará esto mucho más cómodo. Hoy evitamos DataFrames porque el objetivo es practicar listas y ciclos.
+
+---
+
+# Ciclo de amortización
+
+.code-small[
+```python
+saldo = monto
+total_intereses = 0
+
+for periodo in range(1, plazo + 1):
+    saldo_inicial = saldo
+    interes = saldo_inicial * tasa_mensual
+    abono = cuota - interes
+    saldo_final = max(0, saldo_inicial - abono)
+
+    periodos.append(periodo)
+    intereses.append(interes)
+    abonos_capital.append(abono)
+    saldos_finales.append(saldo_final)
+
+    total_intereses += interes
+    saldo = saldo_final
+```
+]
+
+???
+**DOCENTE:** Explícalo como una película mensual. El saldo final de un mes se convierte en el saldo inicial del siguiente.
+
+---
+
+# Revisar sin imprimir 24 filas
+
+```python
+print(periodos[:3])
+print(saldos_finales[:3])
+print(periodos[-1])
+print(saldos_finales[-1])
+print(f"Intereses totales: ${total_intereses:,.0f}")
+```
+
+--
+
+### Lo que acabamos de usar
+
+`if` + listas + slicing + `for` + `range()` + acumulador.
+
+--
+
+.callout[
+Ya no tenemos una fórmula aislada: tenemos un pequeño proceso financiero reproducible.
+]
+
+???
+**DOCENTE:** Si el tiempo está corto, cierra aquí la parte guiada y pasa directamente a la actividad.
+
+---
+
+class: center, middle, inverse
+
+# Parte 5
+## Actividad en salas
+
+---
+
+# Actividad: decisión y plan de un crédito
+
+| Dato | Valor |
+|---|---:|
+| Monto | $18.000.000 |
+| Tasa | 18% E.A. |
+| Plazo | 24 meses |
+| Ingreso mensual | $6.500.000 |
+| Obligaciones actuales | $1.100.000 |
+| Score | 715 |
+| Antigüedad laboral | 18 meses |
+| Mora actual | No |
+
+???
+**DOCENTE:** La actividad está diseñada para que el caso pase por todas las etapas y puedan construir la amortización.
+
+---
+
+# Reglas del motor de crédito
+
+### APROBADO
+score ≥ 700, endeudamiento total ≤ 40%, antigüedad ≥ 12 meses y sin mora.
+
+### REVISIÓN
+score ≥ 650, endeudamiento total ≤ 50%, antigüedad ≥ 6 meses y sin mora.
+
+### NEGADO
+Cualquier otro caso.
+
+<br>
+
+.small[Reglas didácticas; no representan una política real de una entidad financiera.]
+
+???
+**DOCENTE:** El endeudamiento total debe incluir la nueva cuota. No les des la cuota: deben calcularla.
+
+---
+
+# Lo que debe hacer el notebook
+
+1. Calcular tasa mensual equivalente y cuota fija.
+2. Calcular endeudamiento total incluyendo la nueva cuota.
+3. Generar la decisión con `if / elif / else`.
+4. Si no es `NEGADO`, construir los 24 periodos con un `for`.
+5. Guardar en listas: periodo, saldo inicial, interés, abono y saldo final.
+6. Usar un acumulador para los intereses totales.
+7. Mostrar los primeros 3 periodos y el último.
+8. Terminar con una interpretación de 2–3 líneas.
+
+???
+**DOCENTE:** Dales 35–45 minutos. El punto 4 obliga a conectar la decisión con el ciclo.
+
+---
+
+# Un pequeño `while` para cerrar
+
+El cliente quiere un fondo de emergencia equivalente a **3 cuotas** y puede ahorrar **$350.000 por mes**.
+
+--
+
+### Pregunta
+
+¿En cuántos meses alcanza la meta?
+
+```python
+while ahorro < meta:
+    ...
+```
+
+--
+
+### Reporte final esperado
+
+`decisión` · `cuota` · `endeudamiento` · `intereses totales` · `saldo final` · `meses para la meta`
+
+???
+**DOCENTE:** Si el grupo va lento, deja el `while` como último punto. La solución completa está en la carpeta Python.
+
+---
+
+# Preguntas guía para las salas
+
+- ¿`=` y `==` están usados correctamente?
+- ¿La tasa está escrita como decimal?
+- ¿El endeudamiento incluye la nueva cuota?
+- ¿El `if` está bien indentado?
+- ¿`range(1, plazo + 1)` genera exactamente 24 periodos?
+- ¿El interés se calcula sobre el saldo inicial?
+- ¿El saldo baja periodo a periodo?
+- ¿El `while` modifica la variable de su condición?
+
+???
+**DOCENTE:** Usa estas preguntas para orientar sin entregar la solución. Si un grupo se bloquea, haz que imprima variables intermedias.
+
+---
+
+# Cierre
+
+Hoy Python aprendió a:
+
+### Decidir
+`if / elif / else`
+
+### Recordar varios valores
+listas
+
+### Repetir
+`for`, `while`, `range()` y acumuladores
+
+--
+
+.orange[Con estas estructuras ya podemos automatizar procesos financieros sencillos de principio a fin.]
+
+???
+**DOCENTE:** Anticipa la siguiente sesión: funciones y diccionarios servirán para encapsular esta lógica y reutilizarla sin copiar todo el código.
+
+---
+
+# Fuentes y referencias para esta sesión
+
+.small[
+- Microcurrículo oficial del curso: *Introducción a la programación para analítica - Financiera*.
+- Material y estructura de la Clase 1 del curso.
+- Python Software Foundation: documentación oficial de expresiones booleanas, control de flujo y estructuras de datos.
+- McKinney, W. *Python for Data Analysis*.
+- VanderPlas, J. *Python Data Science Handbook*.
+- Hilpisch, Y. *Python for Finance*.
+]
+
+???
+**DOCENTE:** Esta diapositiva es de respaldo. No es necesario detenerse en ella durante la sesión.
