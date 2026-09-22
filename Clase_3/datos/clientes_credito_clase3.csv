@@ -1,0 +1,33 @@
+﻿id_cliente,nombre,segmento,ciudad,producto,fecha_solicitud,ingreso_mensual,obligaciones_actuales,monto_solicitado,tasa_ea,plazo_meses,score,antiguedad_meses,tiene_mora
+C001,Cliente 01,Pensionado,Cali,Libre inversión,2026-08-16,3378356.0,963773,8000000,0.225,12,696.0,10,Sí
+C002,Cliente 02,Pensionado,Jamundí,Educativo,2026-08-23,3122583.0,840088,12000000,0.195,18,608.0,7,No
+C003,Cliente 03,Empleado,Yumbo,Vehículo,2026-09-02,3720586.0,111481,15000000,0.18,24,688.0,24,No
+C004,Cliente 04,Independiente,Yumbo,Libranza,2026-08-24,5460439.0,1070910,22000000,0.21,12,724.0,48,No
+C005,Cliente 05,Pensionado,Palmira,Vehículo,2026-08-02,4730848.0,1307669,25000000,0.21,12,,48,Sí
+C006,Cliente 06,Empleado,Cali,Educativo,2026-08-07,6009177.0,1216110,8000000,0.195,48,793.0,48,No
+C007,Cliente 07,Empleado,Palmira,Libranza,2026-08-15,6120196.0,1356115,25000000,0.225,24,700.0,36,Sí
+C008,Cliente 08,Empleado,Jamundí,Educativo,2026-08-31,3874140.0,931409,18000000,0.195,18,642.0,24,No
+C009,Cliente 09,Independiente,Yumbo,Libre inversión,2026-08-25,,237620,18000000,0.21,18,640.0,7,No
+C010,Cliente 10,Independiente,Jamundí,Vehículo,2026-08-04,8023610.0,2737961,10000000,0.195,12,775.0,4,No
+C011,Cliente 11,Independiente,Bogotá,Educativo,2026-08-06,3654143.0,0,25000000,0.21,12,625.0,72,No
+C012,Cliente 12,Empleado,Yumbo,Libranza,2026-08-25,2913225.0,788631,25000000,0.195,12,678.0,4,No
+C013,Cliente 13,Empleado,Yumbo,Educativo,2026-08-02,5199286.0,825178,18000000,0.225,36,661.0,18,No
+C014,Cliente 14,Empleado,,Educativo,2026-08-17,7966013.0,2144593,20000000,0.225,36,650.0,72,No
+C015,Cliente 15,Pensionado,Bogotá,Libranza,2026-08-01,5440306.0,762981,20000000,0.195,18,690.0,24,No
+C016,Cliente 16,Independiente,Medellín,Educativo,2026-08-07,8012645.0,1254086,20000000,0.165,18,691.0,72,No
+C017,Cliente 17,Empleado,Bogotá,Educativo,2026-09-05,4783775.0,2176727,12000000,0.195,12,813.0,24,No
+C018,Cliente 18,Independiente,Medellín,Educativo,2026-08-10,6396578.0,-200000,10000000,0.21,48,629.0,4,No
+C019,Cliente 19,Independiente,Jamundí,Educativo,2026-08-21,5841737.0,2121899,15000000,0.225,48,691.0,72,No
+C020,Cliente 20,Empleado,Medellín,Libranza,2026-08-11,5662443.0,1390503,30000000,0.225,12,742.0,72,No
+C021,Cliente 21,Empleado,Jamundí,Vehículo,2026-08-18,5539455.0,255478,22000000,0.165,24,683.0,24,No
+C022,Cliente 22,Empleado,Medellín,Educativo,2026-08-05,4209531.0,1306982,15000000,0.165,12,609.0,18,No
+C023,Cliente 23,Empleado,Yumbo,Vehículo,2026-08-15,4083961.0,1667963,15000000,0.195,18,724.0,4,no
+C024,Cliente 24,Empleado,Yumbo,Vehículo,2026-08-30,8497847.0,1845524,12000000,0.225,18,560.0,48,Sí
+C025,Cliente 25,Empleado,Yumbo,Libranza,2026-08-02,6538511.0,1563430,22000000,0.195,36,685.0,12,No
+C026,Cliente 26,Empleado,Yumbo,Libre inversión,2026-08-30,3391644.0,623524,12000000,0.165,48,737.0,4,No
+C027,Cliente 27,independiente,Yumbo,Libre inversión,2026-08-29,5659613.0,1299341,25000000,0.225,24,738.0,36,No
+C028,Cliente 28,Empleado,Bogotá,Libre inversión,2026-08-30,5428065.0,518894,20000000,0.21,36,720.0,24,Sí
+C029,Cliente 29,Empleado,Medellín,Educativo,2026-08-07,5878228.0,2550228,15000000,0.18,48,707.0,72,No
+C030,Cliente 30,Independiente,Yumbo,Libre inversión,2026-08-18,4680112.0,1787903,20000000,0.21,24,745.0,10,Sí
+C031,Cliente 31,Empleado,Yumbo,Vehículo,2026-08-10,4439774.0,188294,15000000,0.195,18,790.0,18,Sí
+C032,Cliente 32,Pensionado,Yumbo,Vehículo,2026-08-26,2000000.0,29334,25000000,0.225,12,720.0,12,No

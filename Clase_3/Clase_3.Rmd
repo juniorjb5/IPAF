@@ -1,0 +1,1514 @@
+---
+title: "Funciones, diccionarios y pandas"
+subtitle: "<br/> De reglas reutilizables a bases de datos financieras"
+author: "Orlando Joaqui-Barandica"
+institute: "Universidad del Valle"
+date: "Clase 3"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: 
+      - default
+      - rladies
+      - rladies-fonts
+      - fonts_mtheme.css
+      - sidney.css
+    seal: false  
+    nature: 
+      ratio: 16:9
+      beforeInit: "macros.js"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+
+---
+
+```{r setup, include = FALSE}
+library(knitr)
+library(tidyverse)
+
+knitr::opts_chunk$set(echo = TRUE,
+                      dpi = 300,
+                      warning = FALSE,
+                      message = FALSE,
+                      error = FALSE)
+
+options(htmltools.dir.version = FALSE)
+
+xaringanExtra::use_share_again()
+
+
+xaringanExtra::use_clipboard()
+
+xaringanExtra::use_xaringan_extra("tile_view")
+```
+
+class: inverse, left, bottom
+background-image: url("img/fondo.jpg")
+background-size: cover
+
+
+<style>
+.remark-slide-content {
+  font-size: 25px;
+}
+.remark-slide-content h1 {
+  color: #1F3D59;
+  font-weight: 700;
+}
+
+
+
+
+.remark-slide-content h2, .remark-slide-content h3 {
+  color: #BB7E17;
+}
+.orange {
+  color: #BB7E17;
+  font-weight: 700;
+}
+.blue {
+  color: #1F3D59;
+  font-weight: 700;
+}
+.gray {
+  color: #5f6b73;
+}
+.small {
+  font-size: 18px;
+}
+.medium {
+  font-size: 22px;
+}
+.big {
+  font-size: 36px;
+}
+.huge {
+  font-size: 52px;
+}
+.pull-left-55 {
+  float: left;
+  width: 55%;
+}
+.pull-right-40 {
+  float: right;
+  width: 40%;
+}
+
+.callout {
+  display: block;
+  clear: both;
+  width: 100%;
+  box-sizing: border-box;
+  background: #eef3f6;
+  border-left: 8px solid #BB7E17;
+  padding: 16px 22px;
+  margin-top: 18px;
+  border-radius: 10px;
+}
+.note-box {
+  background: #F7F7F7;
+  border: 1px solid #D9DEE2;
+  padding: 14px 20px;
+  border-radius: 10px;
+}
+.mock-browser {
+  border: 2px solid #D5DADD;
+  border-radius: 14px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.09);
+  font-size: 18px;
+}
+.mock-topbar {
+  background: #eef3f6;
+  padding: 10px 14px;
+  color: #46545c;
+  border-bottom: 1px solid #D5DADD;
+}
+.dot { display:inline-block; width:11px; height:11px; border-radius:50%; background:#C9CED3; margin-right:5px; }
+.mock-url {
+  display:inline-block;
+  margin-left:12px;
+  padding: 4px 12px;
+  background:white;
+  border-radius: 14px;
+  color:#6A737B;
+  width: 70%;
+}
+.mock-menu {
+  background: #fff;
+  padding: 10px 14px;
+  border-bottom: 1px solid #E4E7EA;
+  color:#1F3D59;
+}
+.mock-body {
+  padding: 16px;
+}
+.cell-text {
+  border: 1px solid #D9DEE2;
+  background: #FAFAFA;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+}
+.cell-code {
+  border: 1px solid #D9DEE2;
+  background: #16232E;
+  color: #F2F5F7;
+  padding: 12px;
+  border-radius: 10px;
+  font-family: Consolas, Monaco, monospace;
+  margin-bottom: 12px;
+}
+.tag {
+  display: inline-block;
+  background: #1F3D59;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.timeline {
+  border-left: 5px solid #1F3D59;
+  margin-left: 20px;
+  padding-left: 22px;
+}
+.timeline p {
+  margin: 10px 0;
+}
+.footnote {
+  font-size: 14px;
+  color: #6A737B;
+  position: absolute;
+  bottom: 18px;
+  left: 55px;
+  right: 55px;
+}
+.code-small pre {
+  font-size: 17px !important;
+}
+
+
+
+/* Títulos blancos cuando el slide tiene fondo oscuro */
+.inverse h1 {
+  color: #FFFFFF !important;
+}
+
+/* Título principal de la portada */
+.title-slide h1 {
+  color: #FFFFFF !important;
+}
+
+
+
+/* Título principal de la portada */
+.portada h1 {
+  color: #FFFFFF !important;
+}
+
+/* Títulos principales en diapositivas inverse */
+.inverse h1 {
+  color: #FFFFFF !important;
+}
+
+</style>
+
+
+
+
+# **`r rmarkdown::metadata$title`**
+----
+
+## **`r rmarkdown::metadata$subtitle`**
+
+### `r rmarkdown::metadata$author`
+### `r rmarkdown::metadata$date`
+
+---
+
+class: center, middle, inverse
+
+# Ruta de la sesión de hoy
+
+## funciones → diccionarios → pandas → limpieza → agregación
+
+.orange[La meta es aprender un flujo completo: leer, diagnosticar, limpiar, calcular, resumir y exportar.]
+
+???
+**DOCENTE:** Esta versión queda más amplia, usando como guía los materiales de funciones, pandas y agregación.
+
+---
+
+# Repaso de la Clase 2
+
+| Concepto | Qué resolvía | Cómo se veía |
+|---|---|---|
+| Condición | decidir entre caminos | `if`, `elif`, `else` |
+| Comparador | producir `True` o `False` | `score >= 700` |
+| Operador lógico | combinar reglas | `and`, `or`, `not` |
+| Lista | guardar varios valores | `flujos[0]`, `flujos[-1]` |
+| Ciclo `for` | repetir con cantidad conocida | `for mes in range(1, 37)` |
+| Acumulador | construir un total paso a paso | `total += interes` |
+
+???
+**DOCENTE:** Funciones y pandas usan estas ideas por debajo. No es un tema nuevo desconectado.
+
+---
+
+# PRÁCTICA · 5 MIN
+## Repaso relámpago
+
+```python
+flujos = [-40_000_000, 13_500_000, 16_200_000, 18_400_000]
+total = 0
+
+for f in flujos:
+    total += f
+
+total
+flujos[1:3]
+flujos[-1]
+total > 0
+```
+
+Antes de abrir pandas, recordamos que Python opera con objetos, reglas y repetición.
+
+???
+**DOCENTE:** Que respondan rápido. No dedicar más de 5 minutos.
+
+---
+
+
+# Objetivos de aprendizaje
+
+Al finalizar la sesión, el estudiante debe poder:
+
+1. definir funciones con `def`, parámetros y `return`;
+2. usar diccionarios para representar entidades financieras;
+3. entender la transición de lista de diccionarios a `DataFrame`;
+4. leer CSV y Excel con parámetros básicos;
+5. diagnosticar una base antes de calcular;
+6. filtrar, crear columnas y aplicar reglas de negocio;
+7. limpiar faltantes, textos, duplicados y escalas;
+8. resumir con `groupby`, `agg`, `pivot_table` y exportar resultados.
+
+???
+**DOCENTE:** Ambicioso, pero en una clase de tres horas se puede cubrir si el código largo queda en el notebook.
+
+---
+
+
+class: center, middle, inverse
+
+# Parte 1
+## Funciones: no copiar la misma regla muchas veces
+
+---
+
+# El problema del copiar y pegar
+
+```python
+cuota_1 = monto_1 * i / (1 - (1 + i) ** -plazo_1)
+cuota_2 = monto_2 * i / (1 - (1 + i) ** -plazo_2)
+cuota_3 = monto_3 * i / (1 - (1 + i) ** -plazo_3)
+```
+
+--
+
+Si cambia la forma de calcular la tasa, toca revisar todas las copias.
+
+.callout[
+Una función convierte una regla financiera en una pieza única, auditable y reutilizable.
+]
+
+---
+
+# Vocabulario básico
+
+| Término | Qué significa | Ejemplo |
+|---|---|---|
+| Función | bloque de código con nombre | `cuota_fija()` |
+| Parámetro | nombre que espera la función | `monto`, `tasa_ea` |
+| Argumento | valor real entregado al llamar | `34_500_000`, `0.215` |
+| Retorno | resultado que entrega | cuota mensual |
+| Modularizar | separar el problema en piezas | tasa, cuota, decisión |
+
+.small[En Python ya usamos funciones: `print()`, `len()`, `range()`, `round()` y `type()`.]
+
+---
+
+# `def`: crear una función
+
+```python
+def tasa_mensual(tasa_ea):
+    tasa_mv = (1 + tasa_ea) ** (1 / 12) - 1
+    return tasa_mv
+```
+
+| Parte | Lectura |
+|---|---|
+| `def` | voy a definir una función |
+| `tasa_mensual` | nombre de la función |
+| `(tasa_ea)` | dato que necesita |
+| `:` | aquí empieza el bloque |
+| indentación | líneas que pertenecen a la función |
+| `return` | resultado disponible |
+
+???
+**DOCENTE:** La indentación es parte de la sintaxis. No es decoración.
+
+---
+
+# `print` no es lo mismo que `return`
+
+.pull-left-55[
+```python
+def tasa_mensual(tasa_ea):
+    print((1 + tasa_ea) ** (1/12) - 1)
+
+x = tasa_mensual(0.215)
+x * 34_500_000
+```
+
+.small[`x` queda como `None`.]
+]
+
+.pull-right-40[
+```python
+def tasa_mensual(tasa_ea):
+    return (1 + tasa_ea) ** (1/12) - 1
+
+x = tasa_mensual(0.215)
+x * 34_500_000
+```
+
+.small[`x` sí contiene la tasa.]
+]
+
+.callout[
+`print()` muestra en pantalla. `return` entrega un valor para seguir calculando.
+]
+
+---
+
+# Parámetros por posición y por nombre
+
+```python
+def cuota_fija(monto, tasa_ea, plazo_meses):
+    i = tasa_mensual(tasa_ea)
+    return monto * i / (1 - (1 + i) ** (-plazo_meses))
+```
+
+```python
+cuota_fija(34_500_000, 0.215, 36)
+```
+
+```python
+cuota_fija(monto=34_500_000, tasa_ea=0.215, plazo_meses=36)
+```
+
+.orange[Por nombre es más largo, pero reduce errores cuando hay muchos argumentos.]
+
+---
+
+# Alcance: variables locales
+
+```python
+def cuota_fija(monto, tasa_ea, plazo_meses):
+    i = tasa_mensual(tasa_ea)
+    factor = 1 - (1 + i) ** (-plazo_meses)
+    return monto * i / factor
+```
+
+```python
+factor
+# NameError: name 'factor' is not defined
+```
+
+.callout[Una variable creada dentro de una función normalmente solo existe dentro de esa función.]
+
+---
+
+# Una función que llama a otra
+
+```python
+def tasa_mensual(tasa_ea):
+    return (1 + tasa_ea) ** (1 / 12) - 1
+
+
+def cuota_fija(monto, tasa_ea, plazo_meses):
+    i = tasa_mensual(tasa_ea)
+    return monto * i / (1 - (1 + i) ** (-plazo_meses))
+```
+
+.callout[La conversión de tasa queda en un solo lugar. Si mañana cambia la regla, se corrige una función.]
+
+---
+
+# Motor de decisión como función
+
+.code-small[
+```python
+def decidir_credito(score, carga, antiguedad_meses, tiene_mora):
+    if score >= 700 and carga <= 0.40 and antiguedad_meses >= 12 and not tiene_mora:
+        return "APROBADO"
+    elif score >= 650 and carga <= 0.50 and antiguedad_meses >= 6 and not tiene_mora:
+        return "REVISION"
+    else:
+        return "NEGADO"
+```
+]
+
+.small[`carga` es el endeudamiento total: obligaciones actuales más cuota nueva, dividido entre ingreso.]
+
+---
+
+# PRÁCTICA · 8 MIN
+## Funciones financieras mínimas
+
+1. Escriba `tasa_mensual(tasa_ea)`.
+2. Escriba `cuota_fija(monto, tasa_ea, plazo_meses)`.
+3. Calcule la cuota de $29.800.000 al 18,7% E.A. a 30 meses.
+4. Escriba `endeudamiento_total(obligaciones, cuota, ingreso)`.
+5. Pruebe el motor de decisión con un cliente de score 712, ingreso $7.100.000, obligaciones $1.200.000 y sin mora.
+
+---
+
+class: center, middle, inverse
+
+# Parte 2
+## Diccionarios: datos con nombre propio
+
+---
+
+# El peligro de las listas paralelas
+
+```python
+nombres = ["CDT Banco Agrario", "TES 2034", "PFBCOLOM"]
+valores = [71_900_000, 58_400_000, 27_300_000]
+clases = ["Renta fija", "Renta fija", "Renta variable"]
+```
+
+La relación entre activo, valor y clase depende de la posición.
+
+.callout[Si una lista se ordena y la otra no, los datos siguen “corriendo” sin error, pero quedan cruzados.]
+
+---
+
+# Diccionario: clave y valor
+
+```python
+activo = {
+    "nombre": "TES Julio 2036",
+    "clase": "renta fija",
+    "valor": 64_700_000,
+    "tasa_cupon": 0.0725
+}
+```
+
+| Parte | Significado |
+|---|---|
+| clave | nombre del dato: `"valor"` |
+| valor | contenido: `64_700_000` |
+| `{}` | crea el diccionario |
+| `activo["valor"]` | consulta por nombre |
+
+---
+
+# Acceder, agregar, modificar y borrar
+
+```python
+activo["valor"]
+activo["clase"]
+
+activo["valor"] = 65_900_000     # modifica
+activo["moneda"] = "COP"         # agrega
+"tasa_cupon" in activo            # verifica
+del activo["tasa_cupon"]          # elimina
+list(activo.keys())               # lista las claves
+```
+
+.orange[Una clave mal escrita no corrige la anterior: crea otra clave.]
+
+---
+
+# El método `get()`
+
+```python
+activo["calificacion"]
+# KeyError
+```
+
+`get()` permite entregar un valor por defecto.
+
+```python
+activo.get("calificacion")
+activo.get("calificacion", "Sin dato")
+```
+
+.callout[`get()` es útil cuando los datos vienen de afuera y no todos los registros traen las mismas claves.]
+
+---
+
+# Lista de diccionarios: ya casi es una tabla
+
+```python
+portafolio = [
+    {"activo": "CDT Banco Agrario", "clase": "renta fija", "valor": 71_900_000},
+    {"activo": "TES 2034", "clase": "renta fija", "valor": 58_400_000},
+    {"activo": "PFBCOLOM", "clase": "renta variable", "valor": 27_300_000}
+]
+
+portafolio[0]["activo"]
+```
+
+.orange[La lista contiene filas. Cada diccionario contiene columnas.]
+
+---
+
+# PRÁCTICA · 10 MIN
+## Modelar un activo y ponderar el portafolio
+
+1. Cree un diccionario para un CDT.
+2. Agregue la clave `moneda` y modifique el monto.
+3. Consulte con `get()` una clave que no existe.
+4. Arme una lista de tres activos.
+5. Recorra la lista para calcular el valor total.
+6. Agregue a cada activo una clave `peso`.
+7. Calcule el retorno ponderado del portafolio.
+
+---
+
+
+# Antes de usar una librería: `import`
+
+Python trae algunas herramientas incorporadas, pero muchas otras
+vienen organizadas en **módulos** o **librerías**.
+
+```python
+import os
+import numpy as np
+import pandas as pd
+```
+
+- `os` → herramientas para trabajar con carpetas y rutas.
+- `numpy` → operaciones numéricas y arreglos.
+- `pandas` → lectura, organización y transformación de datos.
+
+.callout[
+`import` significa: **quiero tener disponible esta herramienta en mi programa**.
+]
+
+---
+
+# ¿Qué significa `as`?
+
+Podríamos escribir:
+
+```python
+import pandas
+```
+
+y luego:
+
+```python
+pandas.read_excel("cartera.xlsx")
+```
+
+Pero por convención se usa un nombre corto:
+
+```python
+import pandas as pd
+```
+
+Entonces escribimos:
+
+```python
+pd.read_excel("cartera.xlsx")
+```
+
+
+---
+
+# ¿Qué significa `as`?
+
+
+Lo mismo ocurre con NumPy:
+
+```python
+import numpy as np
+```
+
+.callout[
+`as` crea un **alias**. No cambia la librería; solamente nos permite llamarla con un nombre más corto.
+]
+
+---
+
+# Colab y los archivos
+
+Google Colab funciona en una computadora temporal en la nube.
+
+Por eso nuestro computador y Colab **no comparten automáticamente los mismos archivos**.
+
+Tenemos dos opciones principales:
+
+1. Subir el archivo directamente a Colab.
+2. Conectar Google Drive.
+
+---
+
+# Opción 1: subir un archivo directamente a Colab
+
+También puede hacerse desde el ícono de carpeta de Colab → **Subir**.
+
+Con código:
+
+```python
+from google.colab import files
+
+uploaded = files.upload()
+```
+
+Se abrirá una ventana para seleccionar el archivo desde el computador.
+
+Por ejemplo:
+
+```text
+cartera.xlsx
+```
+
+
+---
+
+# Opción 1: subir un archivo directamente a Colab
+
+Después podemos leerlo con pandas:
+
+```python
+import pandas as pd
+
+cartera = pd.read_excel("cartera.xlsx")
+```
+
+Y revisar las primeras filas:
+
+```python
+cartera.head()
+```
+
+.callout[
+Cuando se sube un archivo directamente a Colab, normalmente queda disponible dentro de `/content/`.
+]
+
+---
+
+# ¿Dónde está trabajando Colab?
+
+Podemos preguntarle a Python cuál es la carpeta actual:
+
+```python
+import os
+
+os.getcwd()
+```
+
+Normalmente veremos algo parecido a:
+
+```text
+/content
+```
+
+Entonces un archivo llamado:
+
+```text
+cartera.xlsx
+```
+
+puede entenderse como:
+
+```text
+/content/cartera.xlsx
+```
+
+
+
+---
+
+# Importante: los archivos de Colab son temporales
+
+Cuando subimos un archivo directamente:
+
+```python
+from google.colab import files
+uploaded = files.upload()
+```
+
+el archivo queda en el entorno temporal de Colab.
+
+Si la sesión se reinicia o se cierra, ese archivo puede desaparecer.
+
+Por eso, para trabajos que deben conservarse, podemos conectar Google Drive.
+
+---
+
+# Opción 2: conectar Google Drive
+
+Primero montamos Drive:
+
+```python
+from google.colab import drive
+
+drive.mount("/content/drive")
+```
+
+Colab solicitará autorización para acceder al Drive.
+
+Después podemos definir una ruta:
+
+```python
+RUTA = "/content/drive/MyDrive/Clase_Python/"
+```
+
+Y leer un archivo que esté dentro de esa carpeta:
+
+```python
+cartera = pd.read_excel(
+    RUTA + "cartera.xlsx"
+)
+```
+
+---
+
+# Opción 2: conectar Google Drive
+
+<br>
+
+.callout[
+Guardar una ruta en una variable evita tener que escribir la dirección completa del archivo muchas veces.
+]
+
+---
+
+# ¿Qué significa `RUTA`?
+
+Supongamos que escribimos:
+
+```python
+RUTA = "/content/drive/MyDrive/Clase_Python/"
+```
+
+Entonces:
+
+```python
+RUTA + "cartera.xlsx"
+```
+
+produce:
+
+```text
+/content/drive/MyDrive/Clase_Python/cartera.xlsx
+```
+
+---
+
+# ¿Qué significa `RUTA`?
+
+Es decir:
+
+```text
+Mi Drive
+└── Clase_Python
+    └── cartera.xlsx
+```
+
+.callout[
+`RUTA` no es una palabra especial de Python. Es simplemente una variable que nosotros creamos para guardar una dirección.
+]
+
+---
+
+# Crear una carpeta desde Python
+
+La librería `os` permite que Python trabaje con carpetas y rutas.
+
+```python
+import os
+```
+
+Podemos crear una carpeta llamada `resultados`:
+
+```python
+os.makedirs(
+    "resultados",
+    exist_ok=True
+)
+```
+
+¿Qué significa?
+
+- `"resultados"` → nombre de la carpeta.
+- `makedirs()` → crea una carpeta.
+- `exist_ok=True` → si la carpeta ya existe, no genera un error.
+
+
+
+---
+
+# Crear una carpeta desde Python
+
+
+Después podemos guardar archivos dentro de ella:
+
+```python
+resultado.to_excel(
+    "resultados/reporte.xlsx",
+    index=False
+)
+```
+
+.callout[
+La carpeta `resultados` solamente organiza los archivos que nuestro código genere.
+]
+
+---
+
+# Un comienzo más claro para nuestro script
+
+```python
+# ============================================================
+# 0. LIBRERIAS
+# ============================================================
+
+# os permite trabajar con carpetas y rutas.
+import os
+
+# NumPy permite realizar operaciones numericas
+# sobre conjuntos de datos.
+import numpy as np
+
+# pandas permite leer, organizar y transformar
+# datos tabulares.
+import pandas as pd
+
+
+# ============================================================
+# 1. CARGA DE ARCHIVOS EN GOOGLE COLAB
+# ============================================================
+
+# Opcion sencilla:
+# subir el archivo directamente desde el computador.
+
+from google.colab import files
+
+uploaded = files.upload()
+```
+
+Una vez cargado el archivo:
+
+```python
+# Leer el archivo de Excel que acabamos de subir.
+cartera = pd.read_excel("cartera.xlsx")
+
+# Revisar las primeras filas.
+cartera.head()
+```
+
+---
+
+# Opción alternativa: trabajar directamente con Drive
+
+```python
+# ============================================================
+# OPCION 2. TRABAJAR CON GOOGLE DRIVE
+# ============================================================
+
+from google.colab import drive
+
+drive.mount("/content/drive")
+
+RUTA = "/content/drive/MyDrive/Clase_Python/"
+```
+
+Luego:
+
+```python
+cartera = pd.read_excel(
+    RUTA + "cartera.xlsx"
+)
+
+cartera.head()
+```
+
+---
+
+# El flujo completo
+
+```text
+Archivo Excel
+     ↓
+Subir a Colab o conectar Drive
+     ↓
+pd.read_excel()
+     ↓
+DataFrame
+     ↓
+head()
+shape
+info()
+     ↓
+limpieza
+     ↓
+transformación
+     ↓
+groupby()
+     ↓
+reporte final
+```
+
+.callout[
+Desde este punto ya no trabajaremos dato por dato. Trabajaremos con tablas completas dentro de un `DataFrame`.
+]
+
+
+
+---
+
+class: center, middle, inverse
+
+# Parte 3
+## Pandas: de listas manuales a bases tabulares
+
+---
+
+# ¿Por qué aparece pandas?
+
+Con diccionarios entendemos la lógica, pero una base real no se escribe a mano.
+
+Una cartera puede tener 180 solicitudes, 14 variables, duplicados, textos inconsistentes, valores faltantes y reglas de decisión.
+
+.callout[`pandas` permite cargar esa tabla desde un archivo y transformarla con código reproducible.]
+
+---
+
+# Vocabulario: de Excel a pandas
+
+| En Excel | En pandas | Qué cambia |
+|---|---|---|
+| hoja | `DataFrame` | tabla completa |
+| columna | `Series` | objeto que se puede operar |
+| fila | registro | observación con índice |
+| filtro | máscara booleana | regla guardable y auditable |
+| formato de celda | `dtype` | tipo de toda la columna |
+| fórmula arrastrada | operación vectorizada | se escribe una vez |
+
+---
+
+# Operación vectorizada
+
+```python
+import numpy as np
+
+montos = np.array([12_500_000, 8_300_000, 21_700_000, 6_900_000])
+comisiones = montos * 0.015
+comisiones.sum()
+```
+
+.callout[La misma idea opera en pandas: una fórmula sobre una columna se aplica a todas las filas.]
+
+---
+
+# DataFrame: varias Series con el mismo índice
+
+```python
+cartera = pd.DataFrame({
+    "linea": ["Consumo", "Vehículo", "Libranza"],
+    "saldo": [412_300_000, 268_900_000, 195_400_000],
+    "creditos": [214, 62, 149]
+})
+
+cartera["saldo_promedio"] = cartera["saldo"] / cartera["creditos"]
+```
+
+.orange[La operación se escribe una vez y pandas la aplica fila a fila.]
+
+---
+
+# Leer archivos: `read_csv` y `read_excel`
+
+.code-small[
+```python
+cartera = pd.read_csv(
+    "datos/cartera_credito_clase3.csv",
+    sep=";",
+    decimal=",",
+    encoding="cp1252"
+)
+
+catalogo = pd.read_excel(
+    "datos/catalogo_productos_clase3.xlsx",
+    sheet_name="Catalogo"
+)
+```
+]
+
+| Parámetro | Qué controla |
+|---|---|
+| `sep` | separador de columnas |
+| `decimal` | símbolo decimal |
+| `encoding` | lectura de tildes |
+| `sheet_name` | hoja de Excel |
+
+---
+
+# Diagnóstico inicial
+
+```python
+cartera.head()
+cartera.shape
+cartera.columns
+cartera.info()
+cartera.describe()
+cartera.isna().sum()
+```
+
+| Comando | Pregunta que responde |
+|---|---|
+| `head()` | ¿las columnas quedaron bien? |
+| `shape` | ¿cuántas filas y columnas hay? |
+| `info()` | ¿qué tipos y cuántos no nulos? |
+| `describe()` | ¿mínimos y máximos tienen sentido? |
+| `isna().sum()` | ¿dónde faltan datos? |
+
+---
+
+# `info()` y `describe()`
+
+`info()` puede revelar:
+
+- montos leídos como `object`;
+- fechas todavía como texto;
+- menos no nulos que filas;
+- booleanos guardados como `Sí` y `No`.
+
+`describe()` ayuda a detectar:
+
+- tasas mayores que 1;
+- obligaciones negativas;
+- scores fuera de rango;
+- plazos imposibles.
+
+.orange[Los extremos hablan; el promedio puede esconder.]
+
+---
+
+# Máscaras booleanas
+
+```python
+en_mora = cartera["tiene_mora"] == "Sí"
+score_alto = cartera["score"] >= 700
+
+en_mora.sum()
+en_mora.mean()
+```
+
+.callout[Una máscara es una regla guardada con nombre. Después se puede auditar, combinar o negar.]
+
+---
+
+# Combinar condiciones y usar `.loc[]`
+
+```python
+prioridad = cartera[(cartera["score"] >= 700) &
+                    (cartera["monto_solicitado"] > 35_000_000)]
+```
+
+```python
+cartera.loc[
+    cartera["score"] >= 700,
+    ["id_solicitud", "oficina", "score", "monto_solicitado"]
+]
+```
+
+.small[En pandas usamos `&`, `|`, `~` y paréntesis. En `.loc[filas, columnas]`, antes de la coma van las filas.]
+
+---
+
+# Columnas calculadas y `apply()`
+
+```python
+cartera["tasa_mensual"] = (1 + cartera["tasa_ea"]) ** (1/12) - 1
+```
+
+```python
+cartera["cuota_estimada"] = cartera.apply(
+    lambda f: cuota_fija(f["monto_solicitado"], f["tasa_ea"], f["plazo_meses"]),
+    axis=1
+)
+```
+
+.small[`axis=1` significa por filas. `lambda` es una función corta escrita en el momento.]
+
+---
+
+# PRÁCTICA · 12 MIN
+## Cargar y reconocer la cartera
+
+1. Leer `cartera_credito_clase3.csv`.
+2. Leer `catalogo_productos_clase3.xlsx`.
+3. Revisar `shape`, `head`, `info`, `describe` e `isna().sum()`.
+4. Contar duplicados exactos y duplicados por `id_solicitud`.
+5. Listar oficinas con `value_counts(dropna=False)`.
+6. Escribir tres problemas detectados antes de limpiar.
+
+---
+
+class: center, middle, inverse
+
+# Parte 4
+## Limpieza, agregación y cruce de tablas
+
+---
+
+# NaN no es cero
+
+| Valor | Interpretación |
+|---|---|
+| `0` | dato observado con valor cero |
+| `""` | texto vacío |
+| `NaN` | dato faltante |
+
+```python
+pd.isna(np.nan)
+np.nan == np.nan
+```
+
+.orange[En mora, rellenar faltantes con cero puede convertir clientes desconocidos en clientes al día.]
+
+---
+
+# Tres decisiones frente a un faltante
+
+| Decisión | Qué hace | Cuándo puede servir | Costo |
+|---|---|---|---|
+| eliminar | quita fila o columna | pocos casos | pierde información |
+| imputar | rellena con un valor | hay supuesto defendible | inventa dato |
+| marcar | crea categoría visible | el faltante informa algo | exige explicar |
+
+.callout[La pregunta no es “¿qué comando uso?”, sino “¿por qué falta este dato?”.]
+
+---
+
+# `dropna()` y `fillna()`
+
+```python
+cartera.dropna()
+cartera.dropna(subset=["score"])
+```
+
+```python
+cartera["segmento"] = cartera["segmento"].fillna("Sin segmento")
+cartera["score"] = cartera["score"].fillna(cartera["score"].median())
+```
+
+.small[`subset` limita dónde se elimina. `fillna()` reemplaza faltantes con una decisión explícita.]
+
+
+
+- dropna() (Eliminar faltantes): Elimina filas o columnas que contienen valores nulos (NaN). Permite usar el argumento subset para aplicar el filtro solo sobre columnas específicas.
+
+- fillna() (Imputar o reemplazar): Sustituye los valores nulos por un valor predefinido (como una etiqueta "Sin dato") o por una métrica calculada (como la mediana o el promedio de la columna).
+
+
+---
+
+# Texto que parece igual y no lo es
+
+```python
+cartera["oficina"].nunique()
+
+cartera["oficina"] = (
+    cartera["oficina"]
+    .astype("string") # 1. Convierte el tipo de dato a texto (string)
+    .str.strip() # 2. Elimina espacios invisibles al inicio y al final
+    .str.title() # 3. Convierte a formato Título (Primera letra mayúscula, el resto minúsculas)
+)
+```
+
+| Método | Qué corrige |
+|---|---|
+| `.str.strip()` | espacios al inicio o final |
+| `.str.title()` | mayúsculas/minúsculas |
+| `.str.lower()` | texto para comparar |
+
+---
+
+# Imposible no es lo mismo que extremo
+
+| Ejemplo | Clasificación | Tratamiento |
+|---|---|---|
+| obligación = −$250.000 | imposible | corregir o aislar |
+| crédito de $70 millones | extremo válido | conservar |
+| tasa = 23.4 | error de escala | convertir a 0.234 |
+| mora = 386 días | extremo válido | conservar |
+
+.orange[Imposible se corrige o se aísla. Extremo se conserva y se interpreta.]
+
+---
+
+# Convertir tipos: números y fechas
+
+```python
+cartera["monto_solicitado"] = pd.to_numeric(
+    cartera["monto_solicitado"],
+    errors="coerce"
+)
+
+cartera["fecha_solicitud"] = pd.to_datetime(
+    cartera["fecha_solicitud"],
+    errors="coerce"
+)
+```
+
+.small[`errors="coerce"` convierte a `NaN` lo que no puede convertir.]
+
+---
+
+# Duplicados
+
+```python
+cartera.duplicated().sum()
+cartera = cartera.drop_duplicates()
+```
+
+```python
+cartera.duplicated(subset="id_solicitud").sum()
+cartera = cartera.drop_duplicates(subset="id_solicitud", keep="last")
+```
+
+| Caso | Lectura |
+|---|---|
+| duplicado exacto | toda la fila está repetida |
+| duplicado por llave | el mismo id aparece varias veces |
+| `keep="last"` | conserva la última aparición |
+
+---
+
+# PRÁCTICA · 15 MIN
+## Dejar la tabla utilizable
+
+1. Eliminar duplicados exactos.
+2. Ordenar por fecha y conservar el último registro por `id_solicitud`.
+3. Normalizar textos.
+4. Convertir variables numéricas con `pd.to_numeric`.
+5. Corregir tasas mayores que 1.
+6. Corregir obligaciones negativas.
+7. Tratar faltantes con una regla explícita.
+8. Verificar que la tabla quedó limpia.
+
+---
+
+# La pregunta define la granularidad
+
+Una fila por solicitud sirve para gestión operativa.
+
+Pero un comité pregunta:
+
+- ¿qué segmento concentra más solicitudes?;
+- ¿cuánto monto quedó aprobado, negado o en revisión?;
+- ¿qué oficina tiene más endeudamiento promedio?;
+- ¿qué línea de producto tiene más riesgo?
+
+.callout[Agrupar es cambiar la unidad de análisis para responder una pregunta de negocio.]
+
+---
+
+# `groupby()` y `agg()`
+
+```python
+resumen = cartera.groupby("segmento", as_index=False).agg(
+    solicitudes=("id_solicitud", "count"),
+    monto_total=("monto_solicitado", "sum"),
+    endeudamiento_promedio=("endeudamiento_total", "mean")
+)
+```
+
+.small[Cada línea en `agg()` sigue: `nombre_resultado=(columna, función)`.]
+
+.orange[`as_index=False` conserva el grupo como columna normal.]
+
+---
+
+# `pivot_table()`: tabla dinámica en pandas
+
+```python
+tabla = cartera.pivot_table(
+    index="segmento",
+    columns="decision",
+    values="monto_solicitado",
+    aggfunc="sum",
+    fill_value=0
+)
+```
+
+| Parámetro | Lectura |
+|---|---|
+| `index` | filas |
+| `columns` | columnas nuevas |
+| `values` | variable resumida |
+| `aggfunc` | función de resumen |
+| `fill_value` | valor para combinaciones vacías |
+
+---
+
+# `merge()`: cruzar dos tablas
+
+```python
+trabajo = trabajo.merge(
+    catalogo,
+    on="producto",
+    how="left"
+)
+```
+
+| Elemento | Qué significa |
+|---|---|
+| `catalogo` | tabla adicional |
+| `on="producto"` | llave común |
+| `how="left"` | conserva todas las filas de la izquierda |
+
+.callout[Es similar a BUSCARV/XLOOKUP, pero reproducible y con varias columnas a la vez.]
+
+---
+
+# Verificaciones después del `merge`
+
+```python
+filas_antes = len(trabajo)
+monto_antes = trabajo["monto_solicitado"].sum()
+
+trabajo = trabajo.merge(catalogo, on="producto", how="left")
+
+assert len(trabajo) == filas_antes
+assert round(trabajo["monto_solicitado"].sum(), 2) == round(monto_antes, 2)
+trabajo["linea"].isna().sum()
+```
+
+.callout[Un cruce puede duplicar filas, perder filas o dejar nulos sin generar error.]
+
+
+.small[La instrucción assert en Python es una herramienta de prueba interna que evalúa si una condición es verdadera (True). Si la condición se cumple, el programa continúa ejecutándose normalmente sin decir nada. Si la condición es falsa (False), Python interrumpe la ejecución del código inmediatamente y arroja un error de tipo AssertionError.]
+
+---
+
+# Exportar resultados
+
+```python
+base_final.to_csv("resultados/base_final_clase3.csv", index=False)
+```
+
+```python
+with pd.ExcelWriter("resultados/informe_clase3.xlsx") as libro:
+    base_final.to_excel(libro, sheet_name="Base final", index=False)
+    resumen_segmento.to_excel(libro, sheet_name="Resumen segmento", index=False)
+    tabla_decisiones.to_excel(libro, sheet_name="Tabla dinamica")
+```
+
+.small[`index=False` evita exportar la numeración interna de pandas como columna adicional.]
+
+
+.small[`with:` Administra la apertura y cierre del archivo de forma automática, garantizando que el Excel se guarde y cierre correctamente al finalizar el bloque.]
+
+---
+
+class: center, middle, inverse
+
+# Parte 5
+## Actividad de cierre
+
+---
+
+# Actividad: motor de decisión sobre una base nueva
+
+Archivo de trabajo:
+
+```text
+datos/clientes_credito_actividad.csv
+```
+
+Objetivo:
+
+.orange[Construir una base limpia con cuota, endeudamiento y decisión; luego entregar un resumen ejecutivo por segmento.]
+
+.small[Se trabaja en grupos. El entregable es el notebook con código, resultados e interpretación corta.]
+
+---
+
+# Reglas de decisión
+
+### APROBADO
+`score >= 700`, endeudamiento total `<= 40%`, antigüedad `>= 12` meses y sin mora.
+
+### REVISIÓN
+`score >= 650`, endeudamiento total `<= 50%`, antigüedad `>= 6` meses y sin mora.
+
+### NEGADO
+Cualquier otro caso.
+
+.callout[El endeudamiento total debe incluir obligaciones actuales más la cuota nueva.]
+
+---
+
+# Lo que debe tener el notebook
+
+1. Lectura del CSV con parámetros correctos.
+2. Diagnóstico: `shape`, `head`, `info`, `describe`, `isna().sum()`.
+3. Lista de problemas detectados antes de limpiar.
+4. Limpieza documentada.
+5. Funciones: tasa mensual, cuota fija y decisión.
+6. Columnas calculadas: cuota, endeudamiento y decisión.
+7. Cruce con catálogo de productos.
+8. Resúmenes por segmento y decisión.
+9. Exportación de resultados.
+10. Interpretación de 3–4 líneas.
+
+---
+
+# Cierre: los cinco puntos de hoy
+
+1. Una función encapsula una regla y evita copiar código frágil.
+2. Un diccionario nombra los datos; una lista de diccionarios ya parece una tabla.
+3. Un `DataFrame` permite leer, revisar y transformar datos tabulares.
+4. Limpiar datos exige decisiones: eliminar, imputar, marcar, corregir o convertir.
+5. Agrupar y cruzar tablas cambia datos operativos en reportes ejecutivos.
+
+---
+
+# Cuando algo falle, revise en este orden
+
+| Síntoma | Causa probable |
+|---|---|
+| `FileNotFoundError` | ruta o nombre de archivo mal escrito |
+| `shape` devuelve una sola columna | falta `sep=";"` |
+| columna numérica aparece como `object` | decimal, textos o `N/D` mezclados |
+| `KeyError` | nombre de columna mal escrito |
+| filtro falla con `and` / `or` | en pandas van `&` / `|` |
+| grupos duplicados como Cali y Cali  | falta `.str.strip()` |
+| merge cambia número de filas | llave repetida o tipo de cruce incorrecto |
+| resultado cambia al ejecutar dos veces | celda modifica columna ya modificada |
+
+---
+
+# Fuentes y referencias para esta sesión
+
+.small[
+- Material de referencia de sesiones sobre funciones, pandas y limpieza/agregación.
+- McKinney, W. *Python for Data Analysis*.
+- VanderPlas, J. *Python Data Science Handbook*.
+- Hilpisch, Y. *Python for Finance*.
+- Documentación oficial de pandas y NumPy.
+]
