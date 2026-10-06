@@ -1,0 +1,22 @@
+{
+  "instrument": "AAPL.O",
+  "currency": "USD",
+  "data": [
+    {
+      "date": "2026-09-24",
+      "close": 253.91,
+      "volume": 43210500
+    },
+    {
+      "date": "2026-09-25",
+      "close": 256.18,
+      "volume": 40188400
+    },
+    {
+      "date": "2026-09-28",
+      "close": 255.47,
+      "volume": 38572100
+    }
+  ],
+  "note": "Ejemplo didactico de estructura JSON; no corresponde a una respuesta en vivo."
+}

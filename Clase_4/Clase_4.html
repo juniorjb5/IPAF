@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Datos de mercado, series de tiempo y beta</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Orlando Joaqui-Barandica" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css/rladies-fonts.css" rel="stylesheet" />
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/shareon/shareon.min.css" rel="stylesheet" />
+    <script src="libs/shareon/shareon.min.js"></script>
+    <link href="libs/xaringanExtra-shareagain/shareagain.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-shareagain/shareagain.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link rel="stylesheet" href="fonts_mtheme.css" type="text/css" />
+    <link rel="stylesheet" href="sidney.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+class: inverse, left, bottom
+background-image: url("img/fondo.jpg")
+background-size: cover
+
+&lt;style&gt;
+.remark-slide-content { font-size: 25px; }
+.remark-slide-content h1 { color: #1F3D59; font-weight: 700; }
+.remark-slide-content h2, .remark-slide-content h3 { color: #BB7E17; }
+.orange { color: #BB7E17; font-weight: 700; }
+.blue { color: #1F3D59; font-weight: 700; }
+.gray { color: #5f6b73; }
+.small { font-size: 18px; }
+.medium { font-size: 22px; }
+.big { font-size: 36px; }
+.huge { font-size: 52px; }
+.pull-left-55 { float: left; width: 55%; }
+.pull-right-40 { float: right; width: 40%; }
+.callout {
+  display: block; clear: both; width: 100%; box-sizing: border-box;
+  background: #eef3f6; border-left: 8px solid #BB7E17;
+  padding: 16px 22px; margin-top: 18px; border-radius: 10px;
+}
+.note-box { background: #F7F7F7; border: 1px solid #D9DEE2; padding: 14px 20px; border-radius: 10px; }
+.code-small pre { font-size: 17px !important; }
+.code-tiny pre { font-size: 14px !important; }
+.inverse h1 { color: #FFFFFF !important; }
+.title-slide h1 { color: #FFFFFF !important; }
+.portada h1 { color: #FFFFFF !important; }
+&lt;/style&gt;
+
+# **Datos de mercado, series de tiempo y beta**
+----
+
+## **&lt;br/&gt; De una API a una regresión financiera simple**
+
+### Orlando Joaqui-Barandica
+### Clase 4
+
+---
+
+class: center, middle, inverse
+
+# Ruta de la sesión de hoy
+
+## API → JSON → yfinance → series de tiempo → estadística → beta
+
+.orange[La meta es pasar de pedir datos de mercado a producir una conclusión financiera reproducible.]
+
+???
+**DOCENTE:** La clase une las sesiones 7 y 8. El caso guiado usa AAPL y el S&amp;P 500. El código largo vive en Colab.
+
+---
+
+# ¿De dónde venimos?
+
+| Clase 3 | Hoy |
+|---|---|
+| `DataFrame` | datos de mercado reales |
+| fechas como columna | fechas como índice temporal |
+| columnas calculadas | retornos y medias móviles |
+| `groupby()` | ventanas móviles |
+| limpieza | análisis estadístico |
+| exportación | estimación de beta |
+
+.callout[Hoy no aparece un Python distinto: usamos pandas sobre datos que cambian en el tiempo.]
+
+---
+
+# Objetivos de aprendizaje
+
+Al finalizar la sesión, el estudiante debe poder:
+
+1. explicar qué son una API, un endpoint y una respuesta JSON;
+2. reconocer cómo se consulta información desde LSEG Workspace/Refinitiv;
+3. descargar precios con `yfinance` en Colab;
+4. trabajar con fechas, retornos, medias móviles y volatilidad;
+5. resumir una serie financiera con estadística descriptiva;
+6. medir correlación entre una acción y el mercado;
+7. estimar e interpretar el beta mediante una regresión lineal simple.
+
+---
+
+class: center, middle, inverse
+
+# Parte 1
+## Pedir datos: API, endpoint y JSON
+
+---
+
+# El problema
+
+Hasta ahora los datos llegaban en un archivo:
+
+```text
+CSV / Excel → pandas → análisis
+```
+
+Hoy queremos que Python los solicite directamente:
+
+```text
+Python → servicio de datos → respuesta → pandas
+```
+
+.callout[Una API permite que un programa se comunique con otro programa mediante reglas definidas.]
+
+---
+
+# API: una puerta de acceso programable
+
+**API** significa *Application Programming Interface*.
+
+En lugar de hacer clic y descargar manualmente:
+
+```text
+1. Python formula una solicitud
+2. el proveedor valida la solicitud
+3. el servidor busca los datos
+4. devuelve una respuesta
+5. Python transforma la respuesta
+```
+
+.orange[La API no es la base de datos: es la forma acordada de pedirle información.]
+
+---
+
+# ¿Qué es un endpoint?
+
+Un **endpoint** es una dirección concreta para un tipo de solicitud.
+
+```text
+/price-history
+/instruments
+/news
+/fundamentals
+```
+
+Cada endpoint define:
+
+- qué datos recibe;
+- qué parámetros acepta;
+- cómo autenticar al usuario;
+- qué estructura devuelve.
+
+.small[En APIs web, esa dirección suele expresarse como una URL.]
+
+---
+
+# Solicitud y respuesta
+
+```python
+import requests
+
+respuesta = requests.get(
+    "https://api.proveedor.com/price-history",
+    params={"symbol": "AAPL", "interval": "1d"}
+)
+```
+
+Esto ilustra la lógica general. En proveedores financieros profesionales normalmente también existen credenciales, permisos y límites de uso.
+
+.callout[No escriba claves privadas directamente en un notebook que va a compartir.]
+
+---
+
+# JSON: texto con estructura
+
+Un servicio web puede devolver algo parecido a esto:
+
+.code-small[
+```json
+{
+  "instrument": "AAPL.O",
+  "currency": "USD",
+  "data": [
+    {"date": "2026-09-24", "close": 253.91, "volume": 43210500},
+    {"date": "2026-09-25", "close": 256.18, "volume": 40188400}
+  ]
+}
+```
+]
+
+.small[JSON usa objetos clave–valor y listas. Por eso se parece mucho a diccionarios y listas de Python.]
+
+---
+
+# De JSON a `DataFrame`
+
+```python
+import json
+import pandas as pd
+
+with open("datos/respuesta_api_ejemplo.json", encoding="utf-8") as archivo:
+    respuesta = json.load(archivo)
+
+precios_api = pd.DataFrame(respuesta["data"])
+precios_api["date"] = pd.to_datetime(precios_api["date"])
+precios_api = precios_api.set_index("date")
+```
+
+.callout[Lo aprendido con diccionarios vuelve a aparecer: `respuesta["data"]` extrae la lista que queremos convertir en tabla.]
+
+---
+
+# Refinitiv hoy: LSEG Data Library
+
+La lógica moderna de acceso desde Python es:
+
+.code-small[
+```python
+import lseg.data as ld
+
+ld.open_session()
+
+hist = ld.get_history(
+    universe="AAPL.O",
+    fields=["TRDPRC_1"],
+    interval="1D",
+    start="2026-01-01",
+    end="2026-09-30"
+)
+
+ld.close_session()
+```
+]
+
+.small[`AAPL.O` es un RIC. El resultado de `get_history()` llega como `DataFrame`.]
+
+???
+**DOCENTE:** LSEG Data Library es la evolución de Refinitiv Data Library. Si la institución aún usa material antiguo, puede aparecer `refinitiv.data`.
+
+---
+
+# Importante: Workspace y Colab no son lo mismo
+
+Para una **Desktop Session**, LSEG Workspace/Eikon debe estar abierto en la misma máquina donde corre Python.
+
+Por eso:
+
+| Entorno | Uso en esta clase |
+|---|---|
+| LSEG Workspace + Python local/CodeBook | consulta profesional |
+| Google Colab | práctica reproducible con `yfinance` |
+| CSV de respaldo | contingencia si falla Internet |
+
+.callout[En Colab, la consulta a LSEG requiere acceso de plataforma/configuración institucional; no basta con tener Workspace abierto en su computador.]
+
+---
+
+# `yfinance`: la consulta se simplifica
+
+En Colab:
+
+```python
+!pip -q install yfinance #! permite ejecutar comandos de terminal dentro de Google Colab o Jupyter Notebooks; -q instala la librería de forma silenciosa sin mostrar mensajes en pantalla.
+```
+
+Luego:
+
+```python
+import yfinance as yf
+
+apple = yf.download(
+    "AAPL",
+    start="2025-01-01",
+    end="2026-10-01",
+    auto_adjust=True, #Ajusta automáticamente los precios de cierre teniendo en cuenta splits de acciones y dividendos.
+    progress=False, # Oculta la barra de progreso durante la descarga
+    multi_level_index=False # Mantiene la estructura de las columnas plana y sencilla (evita índices multicolumna jerárquicos)
+) # devuelve directamente un `DataFrame`.
+```
+
+
+---
+
+# ¿Qué recibimos?
+
+```python
+apple.head()
+apple.info()
+apple.index
+```
+
+Columnas usuales:
+
+| Columna | Lectura |
+|---|---|
+| `Open` | apertura |
+| `High` | máximo |
+| `Low` | mínimo |
+| `Close` | cierre ajustado si `auto_adjust=True` |
+| `Volume` | volumen negociado |
+
+.small[El índice ya suele ser una fecha: `DatetimeIndex`.]
+
+---
+
+# PRÁCTICA · 8 MIN
+## Primera consulta de mercado
+
+1. Instale e importe `yfinance`.
+2. Descargue `MSFT` desde `2026-01-01`.
+3. Revise `head()`, `shape`, `columns` e `index`.
+4. Consulte el último precio de cierre.
+5. Cambie el ticker por una empresa de su interés.
+
+.orange[No interpretar todavía. Primero hay que reconocer la estructura de los datos.]
+
+---
+
+class: center, middle, inverse
+
+# Parte 2
+## Una tabla que tiene memoria: series de tiempo
+
+---
+
+# La fecha no es una columna cualquiera
+
+```python
+apple.index
+```
+
+Un `DatetimeIndex` permite seleccionar periodos:
+
+```python
+apple.loc["2026-06"]
+apple.loc["2026-07-01":"2026-07-31"]
+```
+
+Y ordenar cronológicamente:
+
+```python
+apple = apple.sort_index()
+```
+
+.callout[En una serie de tiempo el orden importa: el dato de hoy está relacionado con lo que ocurrió antes.]
+
+---
+
+# Precio y retorno responden preguntas distintas
+
+Precio:
+
+```python
+apple["Close"]
+```
+
+Retorno simple diario:
+
+```python
+apple["retorno"] = apple["Close"].pct_change()
+```
+
+.small[`pct_change()` calcula el cambio porcentual respecto al dato anterior. La primera observación queda como `NaN`.]
+
+---
+
+# Leer un retorno
+
+Si ayer el precio era 100 y hoy es 102:
+
+```text
+retorno = 102 / 100 - 1 = 0.02 = 2%
+```
+
+En pandas:
+
+```python
+apple[["Close", "retorno"]].tail()
+```
+
+.callout[Los precios no son directamente comparables entre activos; los retornos sí expresan cambios relativos.]
+
+
+
+---
+
+
+# Retorno simple vs. retorno logarítmico
+
+Hasta ahora calculamos el **retorno simple**:
+
+```python
+apple["retorno_simple"] = apple["Close"].pct_change()
+```
+
+También podemos calcular el **retorno logarítmico**:
+
+```python
+import numpy as np
+
+apple["retorno_log"] = np.log(
+    apple["Close"] / apple["Close"].shift(1)
+)
+```
+
+.small[
+El retorno simple mide el cambio porcentual del precio.  
+El retorno logarítmico mide el cambio en el logaritmo del precio.
+]
+
+---
+# ¿Qué diferencia hay?
+
+Si el precio pasa de 100 a 102:
+
+```text
+Retorno simple:
+102 / 100 - 1 = 0.0200 = 2.00%
+
+Retorno logarítmico:
+ln(102 / 100) = 0.0198 ≈ 1.98%
+```
+
+Para cambios pequeños, ambos son muy parecidos.
+
+```python
+apple[["Close",
+       "retorno_simple",
+       "retorno_log"]].tail()
+```
+
+.callout[
+Una ventaja del retorno logarítmico es que puede sumarse a través del tiempo.  
+Por eso aparece con frecuencia en análisis de series financieras.
+]
+
+---
+# ¿Cuál vamos a usar?
+
+.callout[
+**En esta clase:** conoceremos ambos retornos. Usaremos retornos simples para estimar el beta y mostraremos el retorno logarítmico como una medida habitual en análisis financiero.
+]
+
+
+---
+
+# Media móvil: suavizar el precio
+
+```python
+apple["media_20"] = apple["Close"].rolling(20).mean()
+apple["media_60"] = apple["Close"].rolling(60).mean()
+```
+
+| Elemento | Lectura |
+|---|---|
+| `rolling(20)` | ventana de 20 observaciones |
+| `.mean()` | promedio dentro de la ventana |
+| primeras 19 filas | no tienen suficiente historia |
+
+.orange[La media móvil resume tendencia reciente; no es un pronóstico por sí sola.]
+
+---
+
+# Volatilidad móvil
+
+```python
+import numpy as np
+
+apple["vol_20_anual"] = (
+    apple["retorno"]
+    .rolling(20)
+    .std()
+    * np.sqrt(252)
+)
+```
+
+.small[Usamos 252 ruedas bursátiles como aproximación para anualizar la desviación estándar diaria.]
+
+.callout[Volatilidad alta significa retornos más dispersos; no significa automáticamente retorno negativo.]
+
+---
+
+# Visualizar el precio y sus medias
+
+.code-small[
+```python
+import matplotlib.pyplot as plt
+
+apple[["Close", "media_20", "media_60"]].plot(figsize=(11, 5))
+plt.title("AAPL: precio y medias móviles")
+plt.ylabel("USD")
+plt.show()
+```
+]
+
+.orange[La visualización debe responder una pregunta, no decorar la tabla.]
+
+---
+
+# Visualizar la volatilidad
+
+```python
+apple["vol_20_anual"].plot(figsize=(11, 4))
+plt.title("AAPL: volatilidad móvil anualizada")
+plt.ylabel("Volatilidad")
+plt.show()
+```
+
+Preguntas:
+
+- ¿cuándo aumentó la incertidumbre?;
+- ¿la volatilidad se mantiene alta o vuelve rápido a su nivel anterior?;
+- ¿hay episodios aislados o persistentes?
+
+---
+
+# PRÁCTICA · 12 MIN
+## Convertir precios en información
+
+Con la acción descargada:
+
+1. cree `retorno`;
+2. cree medias de 20 y 60 días;
+3. calcule volatilidad móvil de 20 días anualizada;
+4. grafique precio y medias;
+5. identifique visualmente un periodo de volatilidad alta.
+
+---
+
+class: center, middle, inverse
+
+# Parte 3
+## Estadística descriptiva y relación con el mercado
+
+---
+
+# Estadística descriptiva de retornos
+
+```python
+apple["retorno"].describe()
+```
+
+Nos entrega:
+
+- número de observaciones;
+- media;
+- desviación estándar;
+- mínimo y máximo;
+- cuartiles.
+
+.callout[En finanzas, un resumen de retornos suele ser más informativo que un resumen del nivel del precio.]
+
+---
+
+# Dos medidas útiles
+
+```python
+retorno_medio_diario = apple["retorno"].mean()
+volatilidad_diaria = apple["retorno"].std()
+volatilidad_anual = volatilidad_diaria * np.sqrt(252)
+```
+
+.small[Anualizar el promedio multiplicando por 252 es una aproximación aritmética; para esta clase nos concentramos en la volatilidad.]
+
+---
+
+# Acción y mercado en la misma tabla
+
+```python
+bruto = yf.download(
+    ["AAPL", "^GSPC"],
+    start="2025-01-01",
+    end="2026-10-01",
+    auto_adjust=True,
+    progress=False
+)
+
+precios = bruto["Close"].rename(columns={"^GSPC": "Mercado"})
+retornos = precios.pct_change().dropna()
+```
+
+.small[`^GSPC` representa el índice S&amp;P 500 en Yahoo Finance.]
+
+---
+
+# Correlación
+
+```python
+retornos[["AAPL", "Mercado"]].corr()
+```
+
+La correlación lineal está entre −1 y 1:
+
+| Valor | Lectura |
+|---|---|
+| cercano a 1 | se mueven en la misma dirección |
+| cercano a 0 | poca relación lineal |
+| cercano a −1 | se mueven en direcciones opuestas |
+
+.orange[Correlación no implica causalidad.]
+
+---
+
+# El gráfico que necesitamos antes de una regresión
+
+```python
+plt.scatter(
+    retornos["Mercado"],
+    retornos["AAPL"],
+    alpha=0.35
+)
+plt.xlabel("Retorno del mercado")
+plt.ylabel("Retorno de AAPL")
+plt.show()
+```
+
+.callout[Cada punto representa un día. La nube permite ver si una relación lineal es razonable como primera aproximación.]
+
+---
+
+class: center, middle, inverse
+
+# Parte 4
+## Regresión simple: estimar el beta
+
+---
+
+# La idea de una recta
+
+Queremos aproximar:
+
+```text
+retorno_accion = alpha + beta × retorno_mercado + error
+```
+
+- **alpha**: intercepto de la recta;
+- **beta**: pendiente;
+- **error**: parte del retorno que la recta no explica.
+
+.orange[Para esta clase, el beta es el protagonista.]
+
+---
+
+# ¿Qué significa beta?
+
+Si el mercado cambia 1%, la recta estima que la acción cambia aproximadamente:
+
+```text
+beta × 1%
+```
+
+| Beta | Interpretación básica |
+|---|---|
+| `β &gt; 1` | mayor sensibilidad al mercado |
+| `0 &lt; β &lt; 1` | menor sensibilidad |
+| `β ≈ 1` | sensibilidad similar al mercado |
+| `β &lt; 0` | relación inversa en la muestra |
+
+.small[Es una estimación histórica: depende del periodo y frecuencia utilizados.]
+
+---
+
+# Estimar la recta con NumPy
+
+```python
+beta, alpha = np.polyfit(
+    retornos["Mercado"],
+    retornos["AAPL"],
+    1 # 1 indica el grado del polinomio que le pides ajustar
+)
+
+print("Beta:", beta)
+print("Alpha diario:", alpha)
+```
+
+.callout[`np.polyfit(x, y, 1)` busca la recta que mejor aproxima la relación entre `x` y `y`.]
+
+
+```python
+# otra opción
+import statsmodels.formula.api as smf
+
+# Igual a lm(AAPL ~ Mercado, data = retornos) en R
+modelo = smf.ols("AAPL ~ Mercado", data=retornos).fit()
+print(modelo.summary())
+```
+
+
+---
+
+# Verificación financiera del beta
+
+En una regresión simple con intercepto:
+
+```python
+beta_alt = (
+    retornos["AAPL"].cov(retornos["Mercado"])
+    / retornos["Mercado"].var()
+)
+```
+
+```python
+beta
+beta_alt
+```
+
+.orange[Dos caminos distintos deben llevar prácticamente al mismo beta.]
+
+---
+
+# La recta sobre la nube de puntos
+
+.code-small[
+```python
+x = retornos["Mercado"]
+y = retornos["AAPL"]
+
+plt.scatter(x, y, alpha=0.30)
+plt.plot(x, alpha + beta * x)
+plt.xlabel("Retorno del mercado")
+plt.ylabel("Retorno de AAPL")
+plt.title(f"Beta estimado = {beta:.2f}")
+plt.show()
+```
+]
+
+---
+
+# ¿Y qué tanto explica el mercado?
+
+```python
+correlacion = retornos["AAPL"].corr(retornos["Mercado"])
+r2 = correlacion ** 2
+```
+
+En regresión lineal simple con intercepto, `R²` es el cuadrado de la correlación.
+
+.callout[Un beta alto no significa que el mercado explique todo. Beta mide sensibilidad; R² mide cuánto de la variación lineal queda explicada.]
+
+---
+
+# PRÁCTICA · 12 MIN
+## Beta de otra acción
+
+1. Cambie `AAPL` por `JPM`, `KO` o `XOM`.
+2. Descargue la acción y `^GSPC` juntos.
+3. Calcule retornos.
+4. Obtenga correlación.
+5. Estime `beta` y `alpha` con `np.polyfit`.
+6. Grafique nube y recta.
+7. Escriba una interpretación de dos frases.
+
+---
+
+class: center, middle, inverse
+
+# Parte 5
+## Actividad de cierre
+
+---
+
+# Actividad: ficha cuantitativa de una acción
+
+Cada grupo elige **una acción diferente**:
+
+```text
+MSFT · JPM · KO · XOM · NVDA · AMZN · WMT · DIS
+```
+
+Periodo sugerido:
+
+```text
+últimos 2 años disponibles
+```
+
+Mercado de referencia:
+
+```text
+^GSPC  →  S&amp;P 500
+```
+
+.orange[Objetivo: producir una lectura breve de retorno, volatilidad y sensibilidad al mercado.]
+
+---
+
+# El notebook debe incluir
+
+1. consulta de datos con `yfinance`;
+2. revisión de estructura y fechas;
+3. retorno diario de la acción y del mercado;
+4. medias móviles de 20 y 60 días;
+5. volatilidad móvil anualizada de 20 días;
+6. estadística descriptiva de retornos;
+7. correlación acción–mercado;
+8. beta e intercepto con regresión simple;
+9. tres visualizaciones;
+10. interpretación ejecutiva de 5–7 líneas.
+
+---
+
+# Las tres visualizaciones mínimas
+
+### 1. Precio y medias móviles
+¿Dónde cambia la tendencia reciente?
+
+### 2. Volatilidad móvil
+¿Cuándo aparecen episodios de mayor incertidumbre?
+
+### 3. Acción vs. mercado
+¿La nube y la recta son consistentes con el beta estimado?
+
+---
+
+# Preguntas que deben responder
+
+1. ¿Cuál fue el retorno medio diario de la acción?
+2. ¿Cuál fue su volatilidad anualizada?
+3. ¿En qué periodo se observa mayor volatilidad?
+4. ¿Qué tan alta es la correlación con el mercado?
+5. ¿Cuál es el beta estimado?
+6. ¿La acción parece más o menos sensible que el mercado?
+7. ¿Qué limitación tiene esta conclusión?
+
+---
+
+# Entregable
+
+Entregar un `.ipynb` con:
+
+- código ejecutado;
+- resultados visibles;
+- títulos y comentarios breves;
+- gráficos legibles;
+- interpretación final.
+
+.callout[No se evalúa “adivinar” qué hará la acción. Se evalúa construir correctamente el análisis y justificar la interpretación.]
+
+---
+
+
+# Cierre: los seis puntos de hoy
+
+1. Una API permite pedir datos a otro servicio de forma programable.
+2. Un endpoint define una solicitud concreta y JSON organiza la respuesta.
+3. `yfinance` nos entrega datos de mercado directamente como `DataFrame`.
+4. Una serie temporal exige ordenar fechas y transformar precios en retornos.
+5. Ventanas móviles permiten estudiar tendencia y volatilidad.
+6. La pendiente de la regresión acción–mercado es una estimación del beta.
+
+---
+
+# Cuando algo falle, revise en este orden
+
+| Síntoma | Causa probable |
+|---|---|
+| `ModuleNotFoundError: yfinance` | falta instalar la librería |
+| descarga vacía | ticker, fechas o conexión |
+| `KeyError: 'Close'` | estructura MultiIndex o descarga sin datos |
+| primera fila de retorno es `NaN` | comportamiento normal de `pct_change()` |
+| medias empiezan con `NaN` | la ventana aún no tiene suficientes datos |
+| beta da `NaN` | faltantes o series no alineadas |
+| gráfico no aparece | falta `plt.show()` o celda no ejecutada |
+| LSEG no abre sesión en Colab | Desktop Session requiere ejecución en entorno compatible |
+
+---
+
+# Fuentes y referencias para esta sesión
+
+.small[
+- LSEG Developer Community. *LSEG Data Library for Python* y tutorial `get_history()`.
+- Documentación de `yfinance.download()`.
+- McKinney, W. *Python for Data Analysis*.
+- Hilpisch, Y. *Python for Finance*.
+- VanderPlas, J. *Python Data Science Handbook*.
+- Base local de respaldo: simulada exclusivamente para continuidad de la clase.
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
